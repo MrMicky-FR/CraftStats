@@ -1,0 +1,13 @@
+# JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# NodeJS
+node_modules/
+dist/
+transpiled/
+
+# Wrangler
+wrangler.toml

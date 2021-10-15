@@ -1,0 +1,37 @@
+name = "craftstats"
+type = "javascript"
+zone_id = "77004f395d29339a711dfb894c5348c4"
+account_id = "aaa0447d3bc33c311410fb083d29215a"
+route = ""
+workers_dev = true
+
+kv-namespaces = [
+    { binding = "KV_SERVERS", id = "" },
+]
+
+[vars]
+WEBHOOK_URL = ""
+# By default stats in the indivudal servers charts are deleted after 2 hours (120 min)
+RECENT_CHARTS_DELETE_AFTER_MINUTES = 120
+
+# By default the global server chart will have data
+# with a 15 min interval
+GLOBAL_CHART_PING_INTERVAL = 15
+# By default stats in the global server chart are deleted after 6 months (180 days)
+GLOBAL_CHART_DELETE_AFTER_DAYS = 180
+
+# You can define a token to edit the servers from the /edit page
+# The token should be at least 10 characters
+SERVERS_EDIT_TOKEN = ""
+
+[build]
+command = "npm install && npm run build"
+[build.upload]
+format = "service-worker"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[site]
+bucket = "./frontend/dist"
+entry-point = "./"
