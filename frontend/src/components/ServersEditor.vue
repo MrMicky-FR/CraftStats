@@ -65,16 +65,20 @@
             </div>
           </div>
 
-          <VButton @click="deleteServer(server.id)" color="danger">
+          <button
+            @click="deleteServer(server.id)"
+            type="button"
+            class="btn btn-danger"
+          >
             {{ $t('delete') }}
-          </VButton>
+          </button>
         </div>
       </div>
     </div>
 
-    <VButton @click="addServer()" class="me-3">
+    <button @click="addServer" type="button" class="btn btn-primary me-3">
       {{ $t('add') }}
-    </VButton>
+    </button>
 
     <div class="box mt-3">
       <div v-if="saveSuccess" class="alert alert-success">
@@ -98,10 +102,10 @@
         />
       </div>
 
-      <VButton :disabled="saving" type="submit">
+      <button :disabled="saving" type="submit" class="btn btn-primary">
         <span v-if="saving" class="spinner-border spinner-border-sm" />
         {{ $t('save') }}
-      </VButton>
+      </button>
     </div>
   </form>
 </template>
@@ -110,11 +114,10 @@
 import { defineComponent } from 'vue'
 import { fetchServers, saveServers, ServerDescription } from '@/api'
 import Loader from '@/components/Loader.vue'
-import VButton from '@/components/VButton.vue'
 
 export default defineComponent({
   name: 'ServersEditor',
-  components: { Loader, VButton },
+  components: { Loader },
   async mounted() {
     try {
       this.servers = await fetchServers()

@@ -1,0 +1,12 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+
+$body-bg: $gray-100;
+
+// Increase links contrast
+$link-color: shade-color($blue, 5%);
+$link-decoration: none;
+
+$btn-padding-y: 0.5rem;
+$btn-box-shadow: $box-shadow;
+$btn-border-radius: $border-radius-pill;

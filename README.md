@@ -37,4 +37,5 @@ You can see it live on [craftstats.net](https://craftstats.net)
 
 ## Credits
 
-CraftStats is inspired by [MineStats](https://github.com/nathan818fr/minestats) (by @nathan818fr), which is unfortunately no longer maintained today.
+CraftStats is inspired by [MineStats](https://github.com/nathan818fr/minestats) (by [nathan818](https://github.com/nathan818fr)),
+which is unfortunately no longer maintained today.

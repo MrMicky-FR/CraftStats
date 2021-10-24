@@ -44,8 +44,8 @@ router
       return await getAssetFromKV(event, {
         cacheControl: (req) => {
           const url = new URL(req.url)
-          // cache assets for 7 days
-          return url.pathname === '/' ? {} : { browserTTL: 7 * 60 * 60 * 24 }
+          // cache static assets for 1 year
+          return url.pathname === '/' ? {} : { browserTTL: 60 * 60 * 24 * 365 }
         },
       })
     } catch (e) {

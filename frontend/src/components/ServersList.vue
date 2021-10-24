@@ -2,17 +2,19 @@
   <nav class="navbar navbar-expand-lg navbar-light mt-3 mb-3">
     <a class="navbar-brand me-auto fs-3" href="#">CraftStats</a>
 
-    <VButton @click="toggleServersChart">
+    <button @click="toggleServersChart" type="button" class="btn btn-primary">
       {{ $t(showServersChart ? 'hide' : 'show') }}
-    </VButton>
+    </button>
   </nav>
 
   <Loader v-if="loading" :error="error" />
 
   <div v-else class="mb-4">
-    <div v-if="enableServersChart" v-show="showServersChart">
-      <ServersChart :servers="servers" :servers-stats="stats" />
-    </div>
+    <transition name="fade">
+      <div v-if="enableServersChart" v-show="showServersChart">
+        <ServersChart :servers="servers" />
+      </div>
+    </transition>
 
     <div class="row gx-xl-4 gy-4">
       <div v-for="(server, i) in servers" :key="server.id" class="col-lg-6">
@@ -34,14 +36,13 @@ import {
   RecentServersStats,
   ServerDescription,
 } from '@/api'
+import Loader from '@/components/Loader.vue'
 import Server from '@/components/Server.vue'
 import ServersChart from '@/components/ServersChart.vue'
-import Loader from '@/components/Loader.vue'
-import VButton from '@/components/VButton.vue'
 
 export default defineComponent({
   name: 'ServersList',
-  components: { Loader, VButton, ServersChart, Server },
+  components: { Loader, ServersChart, Server },
   props: {
     msg: String,
   },
@@ -91,3 +92,15 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped lang="scss">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

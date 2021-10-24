@@ -1,8 +1,6 @@
 import { DateTime } from 'luxon'
 import { ping } from './pinger'
 import {
-  Server,
-  ServerStats,
   getServers,
   getServersIcons,
   getServersRecentStats,
@@ -10,6 +8,8 @@ import {
   putServerIcons,
   putServersRecentStats,
   putServersStats,
+  Server,
+  ServerStats,
 } from './storage'
 
 declare const WEBHOOK_URL: string | undefined
@@ -23,6 +23,8 @@ export async function handleScheduled(): Promise<Response> {
 
     return new Response('OK')
   } catch (e) {
+    console.error(e.toString())
+
     if (typeof WEBHOOK_URL === 'string') {
       await fetch(WEBHOOK_URL, {
         method: 'POST',
@@ -52,10 +54,14 @@ async function pingServers(): Promise<void> {
 
   // Ping all servers
   for (const server of servers) {
-    const result = await ping(server.address)
-    const favicon = result?.favicon
+    const result = await ping(server)
 
-    playersCounts[server.id] = result ? result.onlinePlayers : -1
+    if (!result) {
+      continue
+    }
+
+    const favicon = result.favicon
+    playersCounts[server.id] = result.onlinePlayers
 
     if (archiveStats && favicon && favicon !== serverIcons[server.id]) {
       serverIcons[server.id] = favicon
@@ -115,7 +121,7 @@ async function updateStats(
   }
 
   for (const stats of serverStats) {
-    const players = playersCounts[stats.serverId]
+    const players = playersCounts[stats.serverId] || -1
     const dailyStats = stats.stats[currentDate]
 
     if (players === undefined) {
@@ -146,6 +152,8 @@ function deleteOldStats(stats: ServerStats[], now: DateTime): ServerStats[] {
       .filter((date) => DateTime.fromISO(date) < deleteOlder)
       .forEach((date) => delete server.stats[date])
   }
+
+  console.log('Old stats have been deleted.')
 
   return stats
 }

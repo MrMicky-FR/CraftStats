@@ -1,10 +1,13 @@
+import { Server } from './storage'
+
 export interface PingResult {
   onlinePlayers: number
   maxPlayers: number
   favicon?: string
 }
 
-export async function ping(host: string): Promise<PingResult | null> {
+export async function ping(server: Server): Promise<PingResult | null> {
+  const host = server.address
   const response = await fetch(`https://eu.mc-api.net/v3/server/ping/${host}`, {
     headers: {
       'Content-Type': 'application/json',

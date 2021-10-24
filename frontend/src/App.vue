@@ -4,19 +4,27 @@
 
     <ServersList v-else />
 
-    <i18n-t keypath="credits" tag="p" class="text-muted text-center">
+    <i18n-t keypath="credits" tag="p" class="text-center">
       <template v-slot:github>
-        <a href="https://github.com/MrMicky-FR/CraftStats" target="_blank">
+        <a
+          href="https://github.com/MrMicky-FR/CraftStats"
+          target="_blank"
+          rel="noopener"
+        >
           GitHub
         </a>
       </template>
       <template v-slot:workers>
-        <a href="https://workers.cloudflare.com/" target="_blank">
+        <a
+          href="https://workers.cloudflare.com/"
+          target="_blank"
+          rel="noopener"
+        >
           Cloudflare Workers
         </a>
       </template>
       <template v-slot:vuejs>
-        <a href="https://vuejs.org/" target="_blank">Vue.js</a>
+        <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue.js</a>
       </template>
     </i18n-t>
   </div>
@@ -43,13 +51,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-$link-decoration: none;
-
+@import 'scss/variables';
 @import '~bootstrap';
-
-body {
-  background: #f2f4f4;
-}
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

@@ -8,7 +8,7 @@ function mapServerStats(stats: ServerStats) {
       .filter(([, count]) => count >= 0)
       .map(([time, count]) => {
         // TODO remove old data support
-        return [Date.parse(`${date}T${time.substring(0, 5)}:00.000Z`), count]
+        return [Date.parse(`${date}T${time.substring(0, 5)}:01.000Z`), count]
       })
   })
 }
@@ -108,6 +108,13 @@ export function createServersChart(
         name: server.name,
         color: server.color,
         data: data,
+        dataGrouping: {
+          approximation: 'high',
+          dateTimeLabelFormats: {
+            second: ['%A, %b %e, %H:%M:%S', '%A, %b %e, %H:%M:%S'],
+            minute: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M'],
+          },
+        },
       }
     })
     .filter((value) => value && value.data.length)
