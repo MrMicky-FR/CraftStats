@@ -8,6 +8,7 @@ export type RecentServersStats = {
 export interface Server {
   id: string
   name: string
+  type?: 'JAVA' | 'BEDROCK'
   address: string
   icon?: string
   color?: string

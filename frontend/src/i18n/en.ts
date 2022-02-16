@@ -1,7 +1,7 @@
 export default {
   loading: 'Loading...',
   error: 'An error occurred: {error}',
-  credits: 'Open-source on {github} - Powered by {workers} and {vuejs}',
+  credits: 'Open-source on {git} - Powered by {workers}, {scaleway} and {vue}',
   playersCount: 'Player: {count} | Players: {count}',
   offline: 'Offline',
   hide: 'Hide servers chart',
@@ -10,7 +10,9 @@ export default {
   address: 'Address',
   version: 'Version(s)',
   color: 'Color',
+  icon: 'Favicon',
   add: 'Add Server',
+  addBedrock: 'Add Bedrock Server',
   delete: 'Delete',
   save: 'Save',
   token: 'Edit token',

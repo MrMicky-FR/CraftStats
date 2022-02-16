@@ -5,7 +5,7 @@
     <ServersList v-else />
 
     <i18n-t keypath="credits" tag="p" class="text-center">
-      <template v-slot:github>
+      <template v-slot:git>
         <a
           href="https://github.com/MrMicky-FR/CraftStats"
           target="_blank"
@@ -19,11 +19,19 @@
           href="https://workers.cloudflare.com/"
           target="_blank"
           rel="noopener"
+          v-text="'Cloudflare Workers'"
+        />
+      </template>
+      <template v-slot:scaleway>
+        <a
+          href="https://www.scaleway.com/en/serverless-functions/"
+          target="_blank"
+          rel="noopener"
         >
-          Cloudflare Workers
+          Scaleway Functions
         </a>
       </template>
-      <template v-slot:vuejs>
+      <template v-slot:vue>
         <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue.js</a>
       </template>
     </i18n-t>

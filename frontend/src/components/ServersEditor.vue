@@ -25,16 +25,21 @@
             </div>
 
             <div class="col-sm-4">
-              <label :for="'address-' + server.id" class="form-label">
+              <label :for="'version-' + server.id" class="form-label">
                 {{ $t('version') }}
               </label>
               <input
+                v-if="server.type !== 'BEDROCK'"
                 v-model.trim="server.version"
                 :id="'version-' + server.id"
                 type="text"
                 class="form-control"
                 placeholder="1.8-1.17"
               />
+
+              <span v-else class="badge bg-secondary">
+                Minecraft: Bedrock Edition
+              </span>
             </div>
 
             <div class="col-sm-8">
@@ -52,7 +57,7 @@
             </div>
 
             <div class="col-sm-4">
-              <label :for="'color-' + server.color" class="form-label">
+              <label :for="'color-' + server.id" class="form-label">
                 {{ $t('color') }}
               </label>
               <input
@@ -61,6 +66,18 @@
                 type="color"
                 class="form-control form-control-color w-100"
                 required
+              />
+            </div>
+
+            <div v-if="server.type === 'BEDROCK'" class="col">
+              <label :for="'icon-' + server.id" class="form-label">
+                {{ $t('icon') }}
+              </label>
+              <input
+                v-model.trim="server.icon"
+                :id="'icon-' + server.id"
+                type="url"
+                class="form-control"
               />
             </div>
           </div>
@@ -76,8 +93,16 @@
       </div>
     </div>
 
-    <button @click="addServer" type="button" class="btn btn-primary me-3">
+    <button
+      @click="addServer(false)"
+      type="button"
+      class="btn btn-primary me-3"
+    >
       {{ $t('add') }}
+    </button>
+
+    <button @click="addServer(true)" type="button" class="btn btn-primary me-3">
+      {{ $t('addBedrock') }}
     </button>
 
     <div class="box mt-3">
@@ -139,10 +164,11 @@ export default defineComponent({
     }
   },
   methods: {
-    addServer() {
+    addServer(bedrock = false) {
       this.servers.push({
         id: Math.random().toString(16).substr(2, 12),
         name: '',
+        type: bedrock ? 'BEDROCK' : 'JAVA',
         address: '',
         version: '',
         color: '#555555',

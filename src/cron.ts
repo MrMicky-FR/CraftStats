@@ -46,7 +46,7 @@ export async function handleScheduled(): Promise<Response> {
 async function pingServers(): Promise<void> {
   const now = DateTime.now().set({ millisecond: 0 })
   const archiveStats = now.minute % GLOBAL_CHART_PING_INTERVAL == 0
-  const playersCounts: { [time: string]: number } = {}
+  const playersCounts: { [serverId: string]: number } = {}
   let updateServerIcons = false
 
   const servers = await getServers()
@@ -54,18 +54,24 @@ async function pingServers(): Promise<void> {
 
   // Ping all servers
   for (const server of servers) {
-    const result = await ping(server)
+    try {
+      const result = await ping(server)
 
-    if (!result) {
-      continue
-    }
+      if (!result) {
+        playersCounts[server.id] = -1
+        continue
+      }
 
-    const favicon = result.favicon
-    playersCounts[server.id] = result.onlinePlayers
+      const favicon = result.favicon
+      playersCounts[server.id] = result.onlinePlayers
 
-    if (archiveStats && favicon && favicon !== serverIcons[server.id]) {
-      serverIcons[server.id] = favicon
-      updateServerIcons = true
+      if (archiveStats && favicon && favicon !== serverIcons[server.id]) {
+        serverIcons[server.id] = favicon
+        updateServerIcons = true
+      }
+    } catch (e) {
+      playersCounts[server.id] = -1
+      console.log(`Unable to ping ${server.address}: ${e}`)
     }
   }
 
@@ -96,7 +102,7 @@ async function updateRecentStats(
       .filter((date) => DateTime.fromISO(date) < deleteOlder)
       .forEach((date) => delete stats[date])
 
-    stats[isoDateTime] = playersCounts[server.id] || -1
+    stats[isoDateTime] = playersCounts[server.id]
 
     recentStats[server.id] = stats
   }
@@ -121,11 +127,11 @@ async function updateStats(
   }
 
   for (const stats of serverStats) {
-    const players = playersCounts[stats.serverId] || -1
+    const players = playersCounts[stats.serverId]
     const dailyStats = stats.stats[currentDate]
 
     if (players === undefined) {
-      return stats
+      continue
     }
 
     if (!dailyStats) {

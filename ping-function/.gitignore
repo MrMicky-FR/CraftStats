@@ -1,0 +1,6 @@
+# NodeJS
+node_modules/
+
+# Serverless
+.serverless/
+.build/

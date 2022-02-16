@@ -13,12 +13,16 @@
         <p class="text-center mb-0 text-muted">#{{ position }}</p>
       </div>
 
-      <div class="col-4 col-xl-5">
+      <div class="col-xl-5 col-sm-4 col">
         <h4 class="fw-bold mb-0">{{ description.name }}</h4>
 
         <p class="mb-0">{{ description.address }}</p>
 
-        <span v-if="description.version" class="badge bg-secondary">
+        <span v-if="description.type === 'BEDROCK'" class="badge bg-secondary">
+          MC: Bedrock Edition
+        </span>
+
+        <span v-else-if="description.version" class="badge bg-secondary">
           {{ description.version }}
         </span>
 

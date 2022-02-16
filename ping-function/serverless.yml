@@ -1,0 +1,22 @@
+service: craftstats
+
+configValidationMode: off
+
+provider:
+  name: scaleway
+  runtime: node14
+  scwToken: secret # Replace with your token
+  scwProject: secret # Replace with your project
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-scaleway-functions
+
+package:
+  patterns:
+    - '!.gitignore'
+    - '!.git/**'
+
+functions:
+  ping:
+    handler: src/handler.handle
