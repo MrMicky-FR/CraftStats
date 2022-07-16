@@ -1,11 +1,8 @@
 name = "craftstats"
-type = "javascript"
-zone_id = "77004f395d29339a711dfb894c5348c4"
-account_id = "aaa0447d3bc33c311410fb083d29215a"
-route = ""
-workers_dev = true
+main = "src/index.ts"
+compatibility_date = "2022-07-01"
 
-kv-namespaces = [
+kv_namespaces = [
     { binding = "KV_SERVERS", id = "" },
 ]
 
@@ -38,4 +35,3 @@ crons = ["*/5 * * * *"]
 
 [site]
 bucket = "./frontend/dist"
-entry-point = "./"
