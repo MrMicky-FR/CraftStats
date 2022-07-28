@@ -69,10 +69,6 @@ export default defineComponent({
         return ''
       }
 
-      if (this.description.icon) {
-        return this.description.icon
-      }
-
       return `${apiBaseUrl}/servers/${this.description.id}/favicon`
     },
   },

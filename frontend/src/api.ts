@@ -11,7 +11,6 @@ export interface ServerDescription {
   name: string
   type?: 'JAVA' | 'BEDROCK'
   address: string
-  icon?: string
   color?: string
   version?: string
 }
@@ -47,10 +46,25 @@ export function saveServers(
   token: string,
   servers: ServerDescription[],
 ): Promise<AxiosResponse<Record<string, string>>> {
-  const json = JSON.stringify({
-    token,
-    servers,
-  })
+  const json = JSON.stringify({ token, servers })
 
   return axios.post(apiBaseUrl + '/servers/update', json)
+}
+
+export async function uploadServerIcons(
+  token: string,
+  icons: Record<string, string>,
+): Promise<AxiosResponse<Record<string, string>>> {
+  const json = JSON.stringify({ token, icons })
+
+  return axios.post(apiBaseUrl + '/servers/icons', json)
+}
+
+export function encodeFileAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = (error) => reject(error)
+  })
 }

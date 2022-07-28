@@ -69,15 +69,29 @@
               />
             </div>
 
-            <div v-if="server.type === 'BEDROCK'" class="col">
+            <div v-if="server.type === 'BEDROCK'" class="col-sm-8">
               <label :for="'icon-' + server.id" class="form-label">
                 {{ $t('icon') }}
               </label>
               <input
-                v-model.trim="server.icon"
+                @change="uploadIcon($event, server.id)"
                 :id="'icon-' + server.id"
-                type="url"
+                type="file"
+                accept="image/png"
                 class="form-control"
+              />
+            </div>
+
+            <div
+              v-if="server.type === 'BEDROCK'"
+              class="col-sm-4 d-flex align-items-center"
+            >
+              <img
+                :src="currentIcon(server.id)"
+                :alt="server.id"
+                class="rounded"
+                height="64"
+                width="64"
               />
             </div>
           </div>
@@ -137,7 +151,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { fetchServers, saveServers, ServerDescription } from '@/api'
+import {
+  apiBaseUrl,
+  encodeFileAsBase64,
+  fetchServers,
+  saveServers,
+  uploadServerIcons,
+  ServerDescription,
+} from '@/api'
 import Loader from '@/components/Loader.vue'
 
 export default defineComponent({
@@ -161,6 +182,7 @@ export default defineComponent({
       token: '',
       saveError: '',
       servers: [] as ServerDescription[],
+      pendingIcons: {} as Record<string, string>,
     }
   },
   methods: {
@@ -177,12 +199,31 @@ export default defineComponent({
     deleteServer(serverId: string) {
       this.servers = this.servers.filter((server) => server.id !== serverId)
     },
+    async uploadIcon(event: Event, serverId: string) {
+      if (!(event.target instanceof HTMLInputElement) || !event.target.files) {
+        return
+      }
+
+      const file = event.target.files[0]
+
+      if (file.size > 100_000) {
+        alert('Max icon size is 100 KB.')
+        return
+      }
+
+      this.pendingIcons[serverId] = await encodeFileAsBase64(file)
+    },
     async save() {
       this.saveError = ''
       this.saveSuccess = false
       this.saving = true
 
       try {
+        if (Object.keys(this.pendingIcons).length) {
+          await uploadServerIcons(this.token, this.pendingIcons)
+          this.pendingIcons = {}
+        }
+
         const result = await saveServers(this.token, this.servers)
 
         if (result.data.status === 'success') {
@@ -198,6 +239,15 @@ export default defineComponent({
       }
 
       this.saving = false
+    },
+    currentIcon(serverId: string) {
+      const pending = this.pendingIcons[serverId]
+
+      if (pending) {
+        return pending
+      }
+
+      return `${apiBaseUrl}/servers/${serverId}/favicon?time=${Date.now()}`
     },
   },
 })

@@ -10,7 +10,6 @@ export interface Server {
   name: string
   type?: 'JAVA' | 'BEDROCK'
   address: string
-  icon?: string
   color?: string
   version?: string
 }

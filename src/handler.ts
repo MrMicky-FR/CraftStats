@@ -1,6 +1,6 @@
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
 import { toByteArray } from 'base64-js'
-import { Router, Request } from 'itty-router'
+import { Router } from 'itty-router'
 import { missing, error, json } from 'itty-router-extras'
 import {
   getServers,
@@ -8,6 +8,7 @@ import {
   getServersStats,
   getServersRecentStats,
   putServers,
+  putServerIcons,
 } from './storage'
 import { fallbackIcon } from './icons'
 
@@ -30,6 +31,7 @@ router
   .get('/api/servers/:id/favicon', async ({ params }) =>
     params?.id ? handleFavicon(params.id) : missing(),
   )
+  .post('/api/servers/icons', handleFaviconUpload)
   .post('/api/servers/update', handleUpdateRequest)
   .get('/editor', async (request, event) => {
     return await getAssetFromKV(event, {
@@ -114,6 +116,28 @@ async function handleUpdateRequest(request: Request) {
   }
 
   await putServers(data.servers)
+
+  return json({ status: 'success' }, defaultOptions)
+}
+
+async function handleFaviconUpload(request: Request) {
+  if (!request.json) {
+    return json({ status: 'invalid_data' }, defaultOptions)
+  }
+
+  const data = await request.json()
+
+  if (!SERVERS_EDIT_TOKEN || SERVERS_EDIT_TOKEN !== data.token) {
+    return json({ status: 'invalid_token' }, defaultOptions)
+  }
+
+  const icons = await getServersIcons()
+
+  for (const serverId in data.icons) {
+    icons[serverId] = data.icons[serverId]
+  }
+
+  await putServerIcons(icons)
 
   return json({ status: 'success' }, defaultOptions)
 }

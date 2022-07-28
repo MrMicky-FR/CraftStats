@@ -2,6 +2,7 @@
   "name": "craftstats-pinger",
   "version": "1.0.0",
   "scripts": {
+    "deploy": "serverless deploy",
     "format": "prettier --write src/**/*.ts",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}'"
   },
