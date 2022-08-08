@@ -92,7 +92,7 @@ async function handleFavicon(serverId: string): Promise<Response> {
   }
 
   // Remove 'data:image/png;base64,' from favicon
-  return new Response(toByteArray(base64icon.substr(22)), {
+  return new Response(toByteArray(base64icon.substring(22)), {
     headers: {
       'Content-Type': 'image/png',
       'Cache-Control': 'max-age=86400', // 1 day

@@ -7,7 +7,7 @@
     </button>
   </nav>
 
-  <Loader v-if="loading" :error="error" />
+  <BLoader v-if="loading" :error="error" />
 
   <div v-else class="mb-4">
     <transition name="fade">
@@ -18,7 +18,7 @@
 
     <div class="row gx-xl-4 gy-4">
       <div v-for="(server, i) in servers" :key="server.id" class="col-lg-6">
-        <Server
+        <ServerBox
           :description="server"
           :stats="serverStats[server.id]"
           :position="i + 1"
@@ -29,20 +29,17 @@
 </template>
 
 <script lang="ts">
+import type { RecentServersStats, ServerDescription } from '@/api'
+
 import { defineComponent } from 'vue'
-import {
-  fetchRecentStats,
-  fetchServers,
-  RecentServersStats,
-  ServerDescription,
-} from '@/api'
-import Loader from '@/components/Loader.vue'
-import Server from '@/components/Server.vue'
+import { fetchRecentStats, fetchServers } from '@/api'
+import BLoader from '@/components/BLoader.vue'
+import ServerBox from '@/components/ServerBox.vue'
 import ServersChart from '@/components/ServersChart.vue'
 
 export default defineComponent({
   name: 'ServersList',
-  components: { Loader, ServersChart, Server },
+  components: { BLoader, ServersChart, ServerBox },
   props: {
     msg: String,
   },
@@ -53,12 +50,12 @@ export default defineComponent({
       this.loading = false
     } catch (e) {
       console.log(e)
-      this.error = e.toString()
+      this.error = (e as Error).toString()
     }
   },
   data() {
     return {
-      error: null,
+      error: undefined as string | undefined,
       loading: true,
       enableServersChart: false,
       showServersChart: false,

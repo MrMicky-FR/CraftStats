@@ -23,7 +23,7 @@ export async function handleScheduled(): Promise<Response> {
 
     return new Response('OK')
   } catch (e) {
-    console.error(e.toString())
+    console.error(`Error during servers ping: ${e}`)
 
     if (typeof WEBHOOK_URL === 'string') {
       await fetch(WEBHOOK_URL, {

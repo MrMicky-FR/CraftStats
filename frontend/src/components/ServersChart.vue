@@ -1,20 +1,23 @@
 <template>
   <div class="box mb-4">
-    <Loader v-if="loading" :error="error" />
+    <BLoader v-if="loading" :error="error" />
 
     <div id="servers-chart" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { fetchStats, ServerDescription, ServerStats } from '@/api'
+import type { PropType } from 'vue'
+import type { ServerDescription, ServerStats } from '@/api'
+
+import { defineComponent } from 'vue'
+import { fetchStats } from '@/api'
 import { createServersChart } from '@/charts'
-import Loader from '@/components/Loader.vue'
+import BLoader from '@/components/BLoader.vue'
 
 export default defineComponent({
   name: 'ServersChart',
-  components: { Loader },
+  components: { BLoader },
   async mounted() {
     if (!this.servers) {
       return
@@ -27,7 +30,7 @@ export default defineComponent({
       createServersChart(this.servers, this.stats)
     } catch (e) {
       console.log(e)
-      this.error = e.toString()
+      this.error = (e as Error).toString()
     }
   },
   props: {
@@ -36,7 +39,7 @@ export default defineComponent({
   data() {
     return {
       loading: true,
-      error: '',
+      error: undefined as string | undefined,
       stats: [] as ServerStats[],
     }
   },

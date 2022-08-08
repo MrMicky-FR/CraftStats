@@ -14,9 +14,12 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'Loader',
+  name: 'BLoader',
   props: {
-    error: String,
+    error: {
+      type: String,
+      required: false,
+    },
   },
 })
 </script>

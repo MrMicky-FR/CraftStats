@@ -1,5 +1,5 @@
 import { status, statusBedrock } from 'minecraft-server-util'
-import { Event, Handler, Response } from './scaleway'
+import { Event, Handler, Response } from 'scaleway-functions'
 
 function jsonResponse(body: Record<string, unknown>, status = 200): Response {
   return {

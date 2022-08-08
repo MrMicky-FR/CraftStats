@@ -3,7 +3,7 @@
     <a class="navbar-brand me-auto fs-3" href="/">CraftStats</a>
   </nav>
 
-  <Loader v-if="loading" :error="error" />
+  <BLoader v-if="loading" :error="error" />
 
   <form v-else @submit.prevent="save()" class="mb-4">
     <div class="row gx-xl-4 gy-4 mb-3">
@@ -150,6 +150,8 @@
 </template>
 
 <script lang="ts">
+import type { ServerDescription } from '@/api'
+
 import { defineComponent } from 'vue'
 import {
   apiBaseUrl,
@@ -157,25 +159,24 @@ import {
   fetchServers,
   saveServers,
   uploadServerIcons,
-  ServerDescription,
 } from '@/api'
-import Loader from '@/components/Loader.vue'
+import BLoader from '@/components/BLoader.vue'
 
 export default defineComponent({
   name: 'ServersEditor',
-  components: { Loader },
+  components: { BLoader },
   async mounted() {
     try {
       this.servers = await fetchServers()
       this.loading = false
     } catch (e) {
       console.log(e)
-      this.error = e.toString()
+      this.error = (e as Error).toString()
     }
   },
   data() {
     return {
-      error: null,
+      error: undefined as string | undefined,
       loading: true,
       saving: false,
       saveSuccess: false,
@@ -235,7 +236,7 @@ export default defineComponent({
         }
       } catch (e) {
         console.log(e)
-        this.saveError = e.toString()
+        this.saveError = (e as Error).toString()
       }
 
       this.saving = false

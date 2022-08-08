@@ -1,0 +1,17 @@
+@import 'variables';
+
+@import '~bootstrap';
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.box {
+  background: #fff;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  padding: 0.75rem;
+  box-shadow: 0 0.2rem 0.3rem rgba(0, 0, 0, 0.2);
+}

@@ -1,14 +1,14 @@
+import type { SeriesOptionsType } from 'highcharts'
+import type { ServerDescription, ServerStats } from './api'
+
 import Highcharts from 'highcharts/highstock'
-import { SeriesOptionsType } from 'highcharts'
-import { ServerDescription, ServerStats } from '@/api'
 
 function mapServerStats(stats: ServerStats) {
   return Object.entries(stats.stats).flatMap(([date, dailyStats]) => {
     return Object.entries(dailyStats)
       .filter(([, count]) => count >= 0)
       .map(([time, count]) => {
-        // TODO remove old data support
-        return [Date.parse(`${date}T${time.substring(0, 5)}:01.000Z`), count]
+        return [Date.parse(`${date}T${time}:01.000Z`), count]
       })
   })
 }

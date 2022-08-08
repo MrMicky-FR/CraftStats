@@ -41,20 +41,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { apiBaseUrl, ServerDescription } from '@/api'
+import type { PropType } from 'vue'
+import type { ServerDescription } from '@/api'
+
+import { defineComponent } from 'vue'
+import { apiBaseUrl } from '@/api'
 import { createIndividualServerChart } from '@/charts'
 
 export default defineComponent({
-  name: 'Server',
+  name: 'ServerBox',
   props: {
     position: Number,
     players: Number,
-    description: Object as PropType<ServerDescription>,
+    description: {
+      type: Object as PropType<ServerDescription>,
+      required: true,
+    },
     stats: Object as PropType<Record<string, number>>,
   },
   mounted() {
-    if (this.description && this.stats) {
+    if (this.stats) {
       createIndividualServerChart(this.description, this.stats)
     }
   },
@@ -65,10 +71,6 @@ export default defineComponent({
       return values.length ? values[values.length - 1] : -1
     },
     favicon() {
-      if (!this.description) {
-        return ''
-      }
-
       return `${apiBaseUrl}/servers/${this.description.id}/favicon`
     },
   },
