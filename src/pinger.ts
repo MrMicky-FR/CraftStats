@@ -1,6 +1,12 @@
+import { Env } from './index'
 import { Server } from './storage'
 
-declare const PING_FUNCTION_URL: string | undefined
+interface ApiResponse {
+  status: boolean
+  online: boolean
+  players: { online: number; max: number }
+  favicon_base64?: string
+}
 
 export interface PingResult {
   onlinePlayers: number
@@ -8,18 +14,17 @@ export interface PingResult {
   favicon?: string
 }
 
-export async function ping(server: Server): Promise<PingResult | null> {
+export async function ping(env: Env, server: Server) {
   const host = server.address
   const isBedrock = server.type === 'BEDROCK'
-  const usePingFunction = typeof PING_FUNCTION_URL === 'string'
 
-  if (!usePingFunction && isBedrock) {
+  if (!env.PING_FUNCTION_URL && isBedrock) {
     console.log('Bedrock servers are not supported without ping function.')
     return null
   }
 
-  const baseUrl = usePingFunction
-    ? `${PING_FUNCTION_URL}/${isBedrock ? 'ping-bedrock' : 'ping'}/`
+  const baseUrl = env.PING_FUNCTION_URL
+    ? `${env.PING_FUNCTION_URL}/${isBedrock ? 'ping-bedrock' : 'ping'}/`
     : 'https://eu.mc-api.net/v3/server/ping/'
   const response = await fetch(baseUrl + host, {
     headers: {
@@ -33,24 +38,22 @@ export async function ping(server: Server): Promise<PingResult | null> {
     return null
   }
 
-  const json = await response.json()
+  const json = await response.json<ApiResponse & PingResult>()
 
-  if (!json.status || (!usePingFunction && !json.online)) {
+  if (!json.status || (!env.PING_FUNCTION_URL && !json.online)) {
     console.log('Invalid server status for ' + host)
     return null
   }
 
-  if (usePingFunction) {
-    return {
-      onlinePlayers: json.onlinePlayers,
-      maxPlayers: json.maxPlayers,
-      favicon: json.favicon,
-    }
+  if (env.PING_FUNCTION_URL) {
+    return json
   }
 
-  return {
+  const result: PingResult = {
     onlinePlayers: json.players.online,
     maxPlayers: json.players.max,
     favicon: json.favicon_base64,
   }
+
+  return result
 }

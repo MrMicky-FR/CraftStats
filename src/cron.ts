@@ -1,61 +1,54 @@
 import { DateTime } from 'luxon'
+import { error } from 'itty-router-extras'
+import { Env } from './index'
 import { ping } from './pinger'
 import {
   getServers,
   getServersIcons,
-  getServersRecentStats,
-  getServersStats,
+  getRecentStats,
+  getStats,
   putServerIcons,
-  putServersRecentStats,
+  putRecentStats,
   putServersStats,
   Server,
   ServerStats,
 } from './storage'
 
-declare const WEBHOOK_URL: string | undefined
-declare const GLOBAL_CHART_PING_INTERVAL: number
-declare const GLOBAL_CHART_DELETE_AFTER_DAYS: number
-declare const RECENT_CHARTS_DELETE_AFTER_MINUTES: number
-
-export async function handleScheduled(): Promise<Response> {
+export async function handleScheduled(env: Env): Promise<Response> {
   try {
-    await pingServers()
+    await pingServers(env)
 
     return new Response('OK')
   } catch (e) {
     console.error(`Error during servers ping: ${e}`)
 
-    if (typeof WEBHOOK_URL === 'string') {
-      await fetch(WEBHOOK_URL, {
+    if (env.WEBHOOK_URL) {
+      await fetch(env.WEBHOOK_URL, {
         method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
+        headers: { 'Content-type': 'application/json' },
         body: JSON.stringify({
           content: `**CraftStats** An error occurred on cron: \`${e}\``,
         }),
       })
     }
 
-    return new Response(`Internal server error: ${e}`, {
-      status: 500,
-    })
+    return error(500, `Internal server error: ${e}`)
   }
 }
 
-async function pingServers(): Promise<void> {
+async function pingServers(env: Env): Promise<void> {
   const now = DateTime.now().set({ millisecond: 0 })
-  const archiveStats = now.minute % GLOBAL_CHART_PING_INTERVAL == 0
+  const archiveStats = now.minute % env.GLOBAL_CHART_PING_INTERVAL == 0
   const playersCounts: { [serverId: string]: number } = {}
   let updateServerIcons = false
 
-  const servers = await getServers()
-  const serverIcons = await getServersIcons()
+  const servers = await getServers(env)
+  const serverIcons = await getServersIcons(env)
 
   // Ping all servers
   for (const server of servers) {
     try {
-      const result = await ping(server)
+      const result = await ping(env, server)
 
       if (!result) {
         playersCounts[server.id] = -1
@@ -75,25 +68,28 @@ async function pingServers(): Promise<void> {
     }
   }
 
-  await updateRecentStats(servers, playersCounts, now)
+  await updateRecentStats(env, servers, playersCounts, now)
 
   if (archiveStats) {
-    await updateStats(servers, playersCounts, now)
+    await updateStats(env, servers, playersCounts, now)
   }
 
   if (updateServerIcons) {
-    await putServerIcons(serverIcons)
+    await putServerIcons(env, serverIcons)
   }
 }
 
 async function updateRecentStats(
+  env: Env,
   servers: Server[],
   playersCounts: Record<string, number>,
   now: DateTime,
 ) {
   const isoDateTime = now.toISO({ suppressMilliseconds: true })
-  const deleteOlder = now.minus({ minutes: RECENT_CHARTS_DELETE_AFTER_MINUTES })
-  const recentStats = await getServersRecentStats()
+  const deleteOlder = now.minus({
+    minutes: env.RECENT_CHARTS_DELETE_AFTER_MINUTES,
+  })
+  const recentStats = await getRecentStats(env)
 
   for (const server of servers) {
     const stats = recentStats[server.id] || {}
@@ -107,17 +103,18 @@ async function updateRecentStats(
     recentStats[server.id] = stats
   }
 
-  await putServersRecentStats(recentStats)
+  await putRecentStats(env, recentStats)
 }
 
 async function updateStats(
+  env: Env,
   servers: Server[],
   playersCounts: Record<string, number>,
   now: DateTime,
 ) {
   const currentDate = now.toISODate()
   const currentTime = now.toFormat('HH:mm')
-  const serverStats = await getServersStats()
+  const serverStats = await getStats(env)
 
   // Add new servers in stats
   for (const server of servers) {
@@ -141,17 +138,17 @@ async function updateStats(
     stats.stats[currentDate][currentTime] = players
   }
 
-  await putServersStats(deleteOldStats(serverStats, now))
+  await putServersStats(env, deleteOldStats(env, serverStats, now))
 }
 
-function deleteOldStats(stats: ServerStats[], now: DateTime): ServerStats[] {
+function deleteOldStats(env: Env, stats: ServerStats[], now: DateTime) {
   // Clear old stats at 4 am
   if (now.hour !== 4 || now.minute !== 0) {
     return stats
   }
 
   // Delete values older than a year
-  const deleteOlder = now.minus({ days: GLOBAL_CHART_DELETE_AFTER_DAYS })
+  const deleteOlder = now.minus({ days: env.GLOBAL_CHART_DELETE_AFTER_DAYS })
 
   for (const server of stats) {
     Object.keys(server.stats)

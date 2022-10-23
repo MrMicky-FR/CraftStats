@@ -13,7 +13,7 @@ function mapServerStats(stats: ServerStats) {
   })
 }
 
-export function createIndividualServerChart(
+export function createSingleServerChart(
   server: ServerDescription,
   stats: Record<string, number>,
 ): void {
@@ -34,19 +34,10 @@ export function createIndividualServerChart(
       spacingBottom: 0,
     },
     title: undefined,
-    xAxis: {
-      type: 'datetime',
-    },
-    yAxis: {
-      title: undefined,
-      floor: 0,
-    },
-    tooltip: {
-      xDateFormat: '%H:%M:%S',
-    },
-    time: {
-      timezoneOffset: new Date().getTimezoneOffset(),
-    },
+    xAxis: { type: 'datetime' },
+    yAxis: { title: undefined, floor: 0 },
+    tooltip: { xDateFormat: '%H:%M:%S' },
+    time: { timezoneOffset: new Date().getTimezoneOffset() },
     responsive: {
       rules: [
         {
@@ -56,28 +47,18 @@ export function createIndividualServerChart(
             },
           },
           chartOptions: {
-            chart: {
-              height: 150,
-            },
+            chart: { height: 150 },
           },
         },
       ],
     },
-    legend: {
-      enabled: false,
-    },
-    exporting: {
-      enabled: false,
-    },
-    credits: {
-      enabled: false,
-    },
+    legend: { enabled: false },
+    exporting: { enabled: false },
+    credits: { enabled: false },
     series: [
       {
         name: 'Players',
-        marker: {
-          enabled: false,
-        },
+        marker: { enabled: false },
         data,
       },
     ] as SeriesOptionsType[],
@@ -89,10 +70,7 @@ export function createServersChart(
   stats: ServerStats[],
 ): void {
   const serverDescriptions = servers.reduce((all, server) => {
-    return {
-      ...all,
-      [server.id]: server,
-    }
+    return { ...all, [server.id]: server }
   }, {} as { [serverId: string]: ServerDescription })
 
   const series = stats
@@ -120,51 +98,21 @@ export function createServersChart(
     .filter((value) => value && value.data.length)
 
   Highcharts.stockChart('servers-chart', {
-    chart: {
-      type: 'spline',
-      zoomType: 'x',
-    },
+    chart: { type: 'spline', zoomType: 'x' },
     rangeSelector: {
       buttons: [
-        {
-          type: 'day',
-          count: 1,
-          text: '1d',
-        },
-        {
-          type: 'day',
-          count: 7,
-          text: '7d',
-        },
-        {
-          type: 'month',
-          count: 1,
-          text: '1m',
-        },
-        {
-          type: 'all',
-          text: 'All',
-        },
+        { type: 'day', count: 1, text: '1d' },
+        { type: 'day', count: 7, text: '7d' },
+        { type: 'month', count: 1, text: '1m' },
+        { type: 'all', text: 'All' },
       ],
       selected: 1,
     },
-    yAxis: {
-      opposite: true,
-      floor: 0,
-    },
-    tooltip: {
-      split: false,
-      shared: true,
-    },
-    time: {
-      timezoneOffset: new Date().getTimezoneOffset(),
-    },
-    legend: {
-      enabled: true,
-    },
-    exporting: {
-      enabled: false,
-    },
+    yAxis: { opposite: true, floor: 0 },
+    tooltip: { split: false, shared: true },
+    time: { timezoneOffset: new Date().getTimezoneOffset() },
+    legend: { enabled: true },
+    exporting: { enabled: false },
     series: series as SeriesOptionsType[],
   })
 }

@@ -25,11 +25,6 @@ SERVERS_EDIT_TOKEN = ""
 # This is required to add Minecraft Bedrock servers
 # PING_FUNCTION_URL = "https://xxx-ping.functions.fnc.fr-par.scw.cloud"
 
-[build]
-command = "npm install && npm run build"
-[build.upload]
-format = "service-worker"
-
 [triggers]
 crons = ["*/5 * * * *"]
 

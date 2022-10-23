@@ -4,7 +4,7 @@ configValidationMode: off
 
 provider:
   name: scaleway
-  runtime: node14
+  runtime: node16
   scwToken: secret # Replace with your token
   scwProject: secret # Replace with your project
 

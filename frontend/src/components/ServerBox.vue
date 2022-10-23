@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import type { ServerDescription } from '@/api'
+
+import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { apiBaseUrl } from '@/api'
+import { createSingleServerChart } from '@/charts'
+
+const { t } = useI18n()
+const props = defineProps<{
+  position: number
+  description: ServerDescription
+  stats: Record<string, number>
+}>()
+
+const favicon = computed(
+  () => `${apiBaseUrl}/servers/${props.description.id}/favicon`,
+)
+const playersCount = computed(() => {
+  const values = Object.values(props.stats)
+
+  return values.length ? values[values.length - 1] : -1
+})
+
+onMounted(() => createSingleServerChart(props.description, props.stats))
+</script>
+
 <template>
   <div class="box">
     <div class="server row">
@@ -27,7 +54,7 @@
         </span>
 
         <p v-if="playersCount >= 0" class="mb-0">
-          {{ $tc('playersCount', playersCount) }}
+          {{ t('playersCount', playersCount) }}
         </p>
 
         <p v-else class="text-danger mb-0">{{ $t('offline') }}</p>
@@ -39,40 +66,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import type { PropType } from 'vue'
-import type { ServerDescription } from '@/api'
-
-import { defineComponent } from 'vue'
-import { apiBaseUrl } from '@/api'
-import { createIndividualServerChart } from '@/charts'
-
-export default defineComponent({
-  name: 'ServerBox',
-  props: {
-    position: Number,
-    players: Number,
-    description: {
-      type: Object as PropType<ServerDescription>,
-      required: true,
-    },
-    stats: Object as PropType<Record<string, number>>,
-  },
-  mounted() {
-    if (this.stats) {
-      createIndividualServerChart(this.description, this.stats)
-    }
-  },
-  computed: {
-    playersCount() {
-      const values = Object.values(this.stats || {})
-
-      return values.length ? values[values.length - 1] : -1
-    },
-    favicon() {
-      return `${apiBaseUrl}/servers/${this.description.id}/favicon`
-    },
-  },
-})
-</script>

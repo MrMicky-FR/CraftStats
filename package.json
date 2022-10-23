@@ -2,12 +2,11 @@
   "name": "craftstats",
   "version": "1.0.0",
   "description": "Minecraft servers tracker built on Cloudflare Workers with Vue.js.",
-  "main": "dist/worker.js",
   "scripts": {
-    "build": "webpack",
-    "format": "prettier --write  *.{json,js} src/**/*.ts test/**/*.ts",
-    "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
-    "test": "jest --config jestconfig.json --verbose"
+    "start": "wrangler dev",
+    "publish": "wrangler publish",
+    "format": "prettier --write  '*.{json,js}' 'src/**/*.ts'",
+    "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.ts'"
   },
   "author": "MrMicky",
   "license": "MIT",
@@ -20,27 +19,20 @@
   },
   "devDependencies": {
     "@cloudflare/kv-asset-handler": "^0.1.3",
-    "@cloudflare/workers-types": "^2.2.2",
+    "@cloudflare/workers-types": "^3.14.1",
     "@types/itty-router-extras": "^0.4.0",
-    "@types/jest": "^27.0.0",
     "@types/luxon": "^3.0.0",
-    "@types/service-worker-mock": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "5.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
     "@typescript-eslint/parser": "^5.32.0",
     "base64-js": "^1.5.1",
-    "eslint": "^8.5.0",
+    "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-typescript": "^3.0.0",
     "itty-router": "^2.4.4",
     "itty-router-extras": "^0.4.2",
-    "jest": "^27.0.1",
     "luxon": "^3.0.1",
-    "prettier": "^2.3.0",
-    "service-worker-mock": "^2.0.5",
-    "ts-jest": "^27.0.1",
-    "ts-loader": "^9.2.2",
-    "typescript": "^4.3.2",
-    "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.0"
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4",
+    "wrangler": "^2.0.24"
   }
 }

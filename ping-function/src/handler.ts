@@ -5,9 +5,7 @@ function jsonResponse(body: Record<string, unknown>, status = 200): Response {
   return {
     statusCode: status,
     body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
   }
 }
 
@@ -20,15 +18,9 @@ async function ping(host: string, isBedrock = false) {
     delete response['rawResponse']
     delete response['serverGUID']
 
-    return {
-      status: true,
-      ...response,
-    }
+    return { status: true, ...response }
   } catch (e) {
-    return {
-      status: false,
-      error: e.toString(),
-    }
+    return { status: false, error: e.toString() }
   }
 }
 
