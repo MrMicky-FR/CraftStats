@@ -10,6 +10,7 @@ export default {
   address: 'Address',
   version: 'Version(s)',
   color: 'Color',
+  website: 'Website URL',
   icon: 'Favicon',
   add: 'Add Server',
   addBedrock: 'Add Bedrock Server',

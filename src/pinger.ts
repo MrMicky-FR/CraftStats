@@ -15,7 +15,8 @@ export interface PingResult {
 }
 
 export async function ping(env: Env, server: Server) {
-  const host = server.address
+  const hostAliases = env.PING_ALIASES ? JSON.parse(env.PING_ALIASES) : {}
+  const host = hostAliases[server.address] || server.address
   const isBedrock = server.type === 'BEDROCK'
 
   if (!env.PING_FUNCTION_URL && isBedrock) {

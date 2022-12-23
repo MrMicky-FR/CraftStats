@@ -41,7 +41,18 @@ onMounted(() => createSingleServerChart(props.description, props.stats))
       </div>
 
       <div class="col-xl-5 col-sm-4 col">
-        <h4 class="fw-bold mb-0">{{ description.name }}</h4>
+        <h4 class="fw-bold mb-0">
+          <a
+            v-if="description.website"
+            :href="description.website"
+            target="_blank"
+            rel="noopener"
+            class="link-dark"
+          >
+            {{ description.name }}
+          </a>
+          <span v-else>{{ description.name }}</span>
+        </h4>
 
         <p class="mb-0">{{ description.address }}</p>
 

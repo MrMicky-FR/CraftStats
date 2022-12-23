@@ -16,6 +16,7 @@ export interface Server {
 
 export interface ServerStats {
   serverId: string
+  record?: { players: number; date: string }
   stats: { [date: string]: DailyServerStats }
 }
 

@@ -131,6 +131,10 @@ async function updateStats(
       continue
     }
 
+    if (players > (stats.record?.players || 0)) {
+      stats.record = { players, date: now.toISO() }
+    }
+
     if (!dailyStats) {
       stats.stats[currentDate] = {}
     }

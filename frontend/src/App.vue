@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import ServersList from './components/ServersList.vue'
+import ServersEditor from './components/ServersEditor.vue'
+
+const path = ref(window.location.pathname)
+</script>
+
 <template>
   <div class="container mb-4 pb-2">
     <ServersEditor v-if="path === '/editor'" />
@@ -37,23 +45,3 @@
     </i18n-t>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-import ServersList from './components/ServersList.vue'
-import ServersEditor from './components/ServersEditor.vue'
-
-export default defineComponent({
-  name: 'App',
-  components: {
-    ServersEditor,
-    ServersList,
-  },
-  data() {
-    return {
-      path: window.location.pathname,
-      year: new Date().getFullYear(),
-    }
-  },
-})
-</script>

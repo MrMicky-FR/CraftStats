@@ -27,6 +27,7 @@ export interface Env {
   WEBHOOK_URL?: string
   PING_FUNCTION_URL?: string
   SERVERS_EDIT_TOKEN?: string
+  PING_ALIASES?: string
   KV_SERVERS: KVNamespace
   __STATIC_CONTENT: string
 }
@@ -106,7 +107,7 @@ async function handleFavicon(env: Env, serverId: string) {
     return new Response(fallbackIcon, {
       headers: {
         'Content-Type': 'image/svg+xml',
-        'Cache-Control': 'max-age=900', // 15 min
+        'Cache-Control': 'max-age=600', // 10 min
       },
     })
   }

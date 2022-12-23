@@ -20,7 +20,7 @@ async function ping(host: string, isBedrock = false) {
 
     return { status: true, ...response }
   } catch (e) {
-    return { status: false, error: e.toString() }
+    return { status: false, error: e?.toString() }
   }
 }
 

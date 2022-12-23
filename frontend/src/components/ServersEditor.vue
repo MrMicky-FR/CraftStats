@@ -197,15 +197,30 @@ function currentIcon(server: string) {
                 width="64"
               />
             </div>
-          </div>
 
-          <button
-            @click="deleteServer(server)"
-            type="button"
-            class="btn btn-danger"
-          >
-            {{ t('delete') }}
-          </button>
+            <div class="col-sm-8">
+              <label :for="'website-' + server.id" class="form-label">
+                {{ t('website') }}
+              </label>
+              <input
+                v-model.trim="server.website"
+                :id="'website-' + server.id"
+                type="url"
+                class="form-control"
+                placeholder="https://hypixel.net"
+              />
+            </div>
+
+            <div class="col-sm-8">
+              <button
+                @click="deleteServer(server)"
+                type="button"
+                class="btn btn-danger"
+              >
+                {{ t('delete') }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 # CraftStats
 
 [![Node.js CI](https://github.com/MrMicky-FR/CraftStats/actions/workflows/tests.yml/badge.svg)](https://github.com/MrMicky-FR/CraftStats/actions/workflows/tests.yml)
-[![Language grade](https://img.shields.io/lgtm/grade/javascript/github/MrMicky-FR/CraftStats.svg?logo=lgtm&logoWidth=18&label=code%20quality)](https://lgtm.com/projects/g/MrMicky-FR/CraftStats/context:javascript)
 
 Minecraft servers tracker built on [Cloudflare Workers](https://workers.cloudflare.com/) with [Vue.js](https://vuejs.org/).
 
