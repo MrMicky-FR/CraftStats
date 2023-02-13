@@ -1,0 +1,23 @@
+{
+  "loading": "Loading...",
+  "error": "An error occurred: {error}",
+  "credits": "Open-source on {git} - Powered by {workers}, {scaleway} and {vue}",
+  "players": "Player: {count} | Players: {count}",
+  "offline": "Offline",
+  "hide": "Hide servers chart",
+  "show": "Show servers chart",
+  "name": "Name",
+  "address": "Address",
+  "version": "Version(s)",
+  "color": "Color",
+  "website": "Website URL",
+  "icon": "Favicon",
+  "add": "Add Server",
+  "add_bedrock": "Add Bedrock Server",
+  "delete": "Delete",
+  "save": "Save",
+  "token": "Edit token",
+  "saved": "The servers has been saved.",
+  "dark": "Dark mode",
+  "light": "Light mode"
+}

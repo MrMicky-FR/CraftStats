@@ -58,7 +58,7 @@ export async function uploadServerIcons(
   token: string,
   icons: Record<string, string>,
 ): Promise<AxiosResponse<Record<string, string>>> {
-  return axios.post('/servers/icons', JSON.stringify({ token, icons }))
+  return client.post('/servers/icons', JSON.stringify({ token, icons }))
 }
 
 export function encodeFileAsBase64(file: File): Promise<string> {
@@ -67,5 +67,16 @@ export function encodeFileAsBase64(file: File): Promise<string> {
     reader.readAsDataURL(file)
     reader.onload = () => resolve(reader.result as string)
     reader.onerror = (error) => reject(error)
+  })
+}
+
+export function sortServers(s: ServerDescription[], stats: RecentServersStats) {
+  return s.sort((a, b) => {
+    const statsA = Object.values(stats[a.id] || {})
+    const statsB = Object.values(stats[b.id] || {})
+    const playersA = statsA.length ? statsA[statsA.length - 1] : -1
+    const playersB = statsB.length ? statsB[statsB.length - 1] : -1
+
+    return playersB - playersA
   })
 }

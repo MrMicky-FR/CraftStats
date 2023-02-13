@@ -26,8 +26,8 @@ onMounted(() => createSingleServerChart(props.description, props.stats))
 </script>
 
 <template>
-  <div class="box">
-    <div class="server row">
+  <div class="box h-100">
+    <div class="server row h-100">
       <div class="col-auto">
         <img
           :src="favicon"
@@ -37,7 +37,7 @@ onMounted(() => createSingleServerChart(props.description, props.stats))
           width="64"
         />
 
-        <p class="text-center mb-0 text-muted">#{{ position }}</p>
+        <p class="text-center mb-0 text-body-secondary">#{{ position }}</p>
       </div>
 
       <div class="col-xl-5 col-sm-4 col">
@@ -47,7 +47,7 @@ onMounted(() => createSingleServerChart(props.description, props.stats))
             :href="description.website"
             target="_blank"
             rel="noopener"
-            class="link-dark"
+            class="text-body"
           >
             {{ description.name }}
           </a>
@@ -65,7 +65,7 @@ onMounted(() => createSingleServerChart(props.description, props.stats))
         </span>
 
         <p v-if="playersCount >= 0" class="mb-0">
-          {{ t('playersCount', playersCount) }}
+          {{ t('players', playersCount) }}
         </p>
 
         <p v-else class="text-danger mb-0">{{ $t('offline') }}</p>

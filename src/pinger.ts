@@ -15,6 +15,23 @@ export interface PingResult {
 }
 
 export async function ping(env: Env, server: Server) {
+  const attempts = env.PING_ATTEMPTS ?? 1
+
+  for (let i = 1; i < attempts; i++) {
+    const result = await doPing(env, server)
+
+    if (!result) {
+      console.error(`Error during ping attempt ${i} for ${server.name}.`)
+      continue
+    }
+
+    return result
+  }
+
+  return doPing(env, server)
+}
+
+async function doPing(env: Env, server: Server): Promise<PingResult | null> {
   const hostAliases = env.PING_ALIASES ? JSON.parse(env.PING_ALIASES) : {}
   const host = hostAliases[server.address] || server.address
   const isBedrock = server.type === 'BEDROCK'
@@ -50,11 +67,9 @@ export async function ping(env: Env, server: Server) {
     return json
   }
 
-  const result: PingResult = {
+  return {
     onlinePlayers: json.players.online,
     maxPlayers: json.players.max,
     favicon: json.favicon_base64,
   }
-
-  return result
 }

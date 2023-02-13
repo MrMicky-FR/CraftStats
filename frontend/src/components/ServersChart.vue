@@ -15,9 +15,9 @@ const props = defineProps<{ servers: ServerDescription[] }>()
 onMounted(async () => {
   try {
     stats.push(...(await fetchStats()))
-    loading.value = false
+    await createServersChart(props.servers, stats)
 
-    createServersChart(props.servers, stats)
+    loading.value = false
   } catch (e) {
     console.log(e)
     error.value = (e as Error).toString()

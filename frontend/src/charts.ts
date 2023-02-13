@@ -1,7 +1,9 @@
-import type { SeriesOptionsType } from 'highcharts'
+import type { SeriesSplineOptions } from 'highcharts'
 import type { ServerDescription, ServerStats } from './api'
 
-import Highcharts from 'highcharts/highstock'
+import Highcharts from 'highcharts'
+
+const COLOR_CLASS_PREFIX = 'chart-color-'
 
 function mapServerStats(stats: ServerStats) {
   return Object.entries(stats.stats).flatMap(([date, dailyStats]) => {
@@ -16,7 +18,7 @@ function mapServerStats(stats: ServerStats) {
 export function createSingleServerChart(
   server: ServerDescription,
   stats: Record<string, number>,
-): void {
+) {
   const data = Object.entries(stats).map(([date, count]) => {
     return [Date.parse(date), count]
   })
@@ -32,6 +34,7 @@ export function createSingleServerChart(
       animation: true,
       spacingLeft: 0,
       spacingBottom: 0,
+      styledMode: true,
     },
     title: undefined,
     xAxis: { type: 'datetime' },
@@ -53,39 +56,46 @@ export function createSingleServerChart(
       ],
     },
     legend: { enabled: false },
+    accessibility: { enabled: false },
     exporting: { enabled: false },
     credits: { enabled: false },
     series: [
       {
         name: 'Players',
         marker: { enabled: false },
+        type: 'spline',
         data,
       },
-    ] as SeriesOptionsType[],
+    ],
   })
 }
 
-export function createServersChart(
+export async function createServersChart(
   servers: ServerDescription[],
   stats: ServerStats[],
-): void {
+) {
+  const { default: StockModule } = await import('highcharts/modules/stock')
+  StockModule(Highcharts)
+
   const serverDescriptions = servers.reduce((all, server) => {
     return { ...all, [server.id]: server }
   }, {} as { [serverId: string]: ServerDescription })
 
   const series = stats
-    .map((value) => {
+    .map((value): SeriesSplineOptions => {
       const server = serverDescriptions[value.serverId]
       const data = mapServerStats(value)
 
       if (!server) {
-        return null
+        return { type: 'spline' }
       }
 
       return {
         name: server.name,
         color: server.color,
-        data: data,
+        className: COLOR_CLASS_PREFIX + server.color,
+        type: 'spline',
+        data,
         dataGrouping: {
           approximation: 'high',
           dateTimeLabelFormats: {
@@ -95,10 +105,10 @@ export function createServersChart(
         },
       }
     })
-    .filter((value) => value && value.data.length)
+    .filter((value) => value.data && value.data.length)
 
   Highcharts.stockChart('servers-chart', {
-    chart: { type: 'spline', zoomType: 'x' },
+    chart: { type: 'spline', styledMode: true },
     rangeSelector: {
       buttons: [
         { type: 'day', count: 1, text: '1d' },
@@ -111,8 +121,20 @@ export function createServersChart(
     yAxis: { opposite: true, floor: 0 },
     tooltip: { split: false, shared: true },
     time: { timezoneOffset: new Date().getTimezoneOffset() },
+    accessibility: { enabled: false },
     legend: { enabled: true },
     exporting: { enabled: false },
-    series: series as SeriesOptionsType[],
+    series,
   })
+
+  document
+    .querySelectorAll<HTMLElement>(`[class*=${COLOR_CLASS_PREFIX}]`)
+    .forEach((el) =>
+      el.classList.forEach((cssClass) => {
+        if (cssClass.startsWith(COLOR_CLASS_PREFIX)) {
+          el.style.fill = cssClass.substring(COLOR_CLASS_PREFIX.length)
+          el.style.stroke = cssClass.substring(COLOR_CLASS_PREFIX.length)
+        }
+      }),
+    )
 }

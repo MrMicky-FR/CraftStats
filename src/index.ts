@@ -28,6 +28,7 @@ export interface Env {
   PING_FUNCTION_URL?: string
   SERVERS_EDIT_TOKEN?: string
   PING_ALIASES?: string
+  PING_ATTEMPTS?: number
   KV_SERVERS: KVNamespace
   __STATIC_CONTENT: string
 }
@@ -55,6 +56,10 @@ router
     }),
   )
   .all('*', async (request: Request, env, ctx) => {
+    if (request.method !== 'HEAD' && request.method !== 'GET') {
+      return error(405, 'Method Not Allowed.')
+    }
+
     try {
       return await fetchAsset(request, env, ctx, {
         cacheControl: (req) => {

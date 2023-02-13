@@ -2,11 +2,12 @@
 import type { RecentServersStats, ServerDescription } from '@/api'
 
 import { onMounted, reactive, ref } from 'vue'
-import { fetchRecentStats, fetchServers } from '@/api'
+import { useI18n } from 'vue-i18n'
+import { fetchRecentStats, fetchServers, sortServers } from '@/api'
 import BLoader from '@/components/BLoader.vue'
+import ThemeButton from '@/components/ThemeButton.vue'
 import ServerBox from '@/components/ServerBox.vue'
 import ServersChart from '@/components/ServersChart.vue'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
@@ -23,15 +24,7 @@ onMounted(async () => {
 
     servers.push(...(await fetchServers()))
     Object.keys(localStats).forEach((key) => (stats[key] = localStats[key]))
-
-    servers.sort((a, b) => {
-      const statsA = Object.values(stats[a.id] || {})
-      const statsB = Object.values(stats[b.id] || {})
-      const playersA = statsA.length ? statsA[statsA.length - 1] : -1
-      const playersB = statsB.length ? statsB[statsB.length - 1] : -1
-
-      return playersB - playersA
-    })
+    sortServers(servers, stats)
 
     loading.value = false
   } catch (e) {
@@ -49,6 +42,8 @@ function toggleServersChart() {
 <template>
   <nav class="navbar navbar-expand-lg navbar-light mt-3 mb-3">
     <a class="navbar-brand me-auto fs-3" href="#">CraftStats</a>
+
+    <ThemeButton class="me-2 me-md-3" />
 
     <button @click="toggleServersChart" type="button" class="btn btn-primary">
       {{ t(showServersChart ? 'hide' : 'show') }}
