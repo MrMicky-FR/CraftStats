@@ -29,7 +29,7 @@ onMounted(async () => {
     loading.value = false
   } catch (e) {
     console.log(e)
-    error.value = (e as Error).toString()
+    error.value = e?.toString()
   }
 })
 

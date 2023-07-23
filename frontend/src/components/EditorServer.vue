@@ -42,7 +42,7 @@ async function uploadIcon(event: Event) {
 function currentIcon(server: string) {
   const favicon = `${apiBaseUrl}/servers/${server}/favicon?time=${Date.now()}`
 
-  return pendingIcon.value ?? favicon
+  return pendingIcon.value || favicon
 }
 </script>
 

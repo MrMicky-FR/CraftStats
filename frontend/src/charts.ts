@@ -3,8 +3,6 @@ import type { ServerDescription, ServerStats } from './api'
 
 import Highcharts from 'highcharts'
 
-const COLOR_CLASS_PREFIX = 'chart-color-'
-
 function mapServerStats(stats: ServerStats) {
   return Object.entries(stats.stats).flatMap(([date, dailyStats]) => {
     return Object.entries(dailyStats)
@@ -29,7 +27,7 @@ export function createSingleServerChart(
 
   new Highcharts.Chart({
     chart: {
-      renderTo: 'server-chart-' + server.id,
+      renderTo: `server-chart-${server.id}`,
       type: 'spline',
       animation: true,
       spacingLeft: 0,
@@ -77,12 +75,15 @@ export async function createServersChart(
   const { default: StockModule } = await import('highcharts/modules/stock')
   StockModule(Highcharts)
 
-  const serverDescriptions = servers.reduce((all, server) => {
+  const serverDescriptions = servers.reduce<{
+    [serverId: string]: ServerDescription
+  }>((all, server) => {
     return { ...all, [server.id]: server }
-  }, {} as { [serverId: string]: ServerDescription })
+  }, {})
+  const colors: string[] = []
 
   const series = stats
-    .map((value): SeriesSplineOptions => {
+    .map((value, index): SeriesSplineOptions => {
       const server = serverDescriptions[value.serverId]
       const data = mapServerStats(value)
 
@@ -90,10 +91,11 @@ export async function createServersChart(
         return { type: 'spline' }
       }
 
+      colors[index] = server.color || '#0000ff'
+
       return {
         name: server.name,
-        color: server.color,
-        className: COLOR_CLASS_PREFIX + server.color,
+        colorIndex: index + 1,
         type: 'spline',
         data,
         dataGrouping: {
@@ -105,7 +107,7 @@ export async function createServersChart(
         },
       }
     })
-    .filter((value) => value.data && value.data.length)
+    .filter((value) => value.data?.length)
 
   Highcharts.stockChart('servers-chart', {
     chart: { type: 'spline', styledMode: true },
@@ -127,14 +129,38 @@ export async function createServersChart(
     series,
   })
 
-  document
-    .querySelectorAll<HTMLElement>(`[class*=${COLOR_CLASS_PREFIX}]`)
-    .forEach((el) =>
-      el.classList.forEach((cssClass) => {
-        if (cssClass.startsWith(COLOR_CLASS_PREFIX)) {
-          el.style.fill = cssClass.substring(COLOR_CLASS_PREFIX.length)
-          el.style.stroke = cssClass.substring(COLOR_CLASS_PREFIX.length)
-        }
-      }),
-    )
+  insertCustomClasses(colors)
+}
+
+function insertCustomClasses(colors: string[]) {
+  const styleSheet = getStyleSheet()
+
+  if (!styleSheet) {
+    return
+  }
+
+  colors.forEach((color, index) => {
+    const rules = `fill: ${color}!important; stroke: ${color}!important;`
+    styleSheet.insertRule(`.highcharts-color-${index + 1} { ${rules} }`)
+  })
+}
+
+function getStyleSheet() {
+  if (!document.styleSheets || document.styleSheets.length === 0) {
+    return null
+  }
+
+  for (let i = 0; i < document.styleSheets.length; i++) {
+    if (document.styleSheets[i].disabled) {
+      continue
+    }
+
+    const media = document.styleSheets[i].media
+
+    if (media.mediaText === '' || media.mediaText.indexOf('screen') !== -1) {
+      return document.styleSheets[i]
+    }
+  }
+
+  return null
 }

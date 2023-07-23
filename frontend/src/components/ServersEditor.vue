@@ -25,7 +25,7 @@ onMounted(async () => {
     loading.value = false
   } catch (e) {
     console.log(e)
-    error.value = (e as Error).toString()
+    error.value = e?.toString()
   }
 })
 
@@ -60,16 +60,16 @@ async function save() {
 
     const result = await saveServers(token.value, servers)
 
-    if (result.data.status === 'success') {
+    if (result.status === 'success') {
       saveSuccess.value = true
-    } else if (result.data.status) {
-      saveError.value = result.data.status
+    } else if (result.status) {
+      saveError.value = result.status
     } else {
       saveError.value = `${result.statusText} (${result.status})`
     }
   } catch (e) {
     console.log(e)
-    saveError.value = (e as Error).toString()
+    saveError.value = e?.toString()
   }
 
   saving.value = false

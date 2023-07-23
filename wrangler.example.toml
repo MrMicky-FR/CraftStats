@@ -10,7 +10,9 @@ kv_namespaces = [
 # Retry when server ping failed
 PING_ATTEMPTS = 2
 
-WEBHOOK_URL = ""
+# Errors will be sent as a Discord webhook to this URL
+# WEBHOOK_URL = ""
+
 # By default stats in the indivudal servers charts are deleted after 2 hours (120 min)
 RECENT_CHARTS_DELETE_AFTER_MINUTES = 120
 
@@ -24,9 +26,12 @@ GLOBAL_CHART_DELETE_AFTER_DAYS = 180
 # The token should be at least 10 characters
 SERVERS_EDIT_TOKEN = ""
 
-# You can define an URL if you use a ping function on Scaleway
-# This is required to add Minecraft Bedrock servers
-# PING_FUNCTION_URL = "https://xxx-ping.functions.fnc.fr-par.scw.cloud"
+# You can define here the URL used to get the servers protocol for Minecraft: Java Edition
+# If not defined, the workers will directly get the status from the server
+# STATUS_URL = "https://api.mcstatus.io/v2/status/java/{address}?query=false"
+
+# URL used to get the servers status for Minecraft: Bedrock Edition
+BEDROCK_STATUS_URl = "https://api.mcstatus.io/v2/status/bedrock/{address}"
 
 [triggers]
 crons = ["*/5 * * * *"]

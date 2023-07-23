@@ -17,7 +17,7 @@ const path = ref(window.location.pathname)
         <a
           href="https://github.com/MrMicky-FR/CraftStats"
           target="_blank"
-          rel="noopener"
+          rel="noopener noreferrer"
         >
           GitHub
         </a>
@@ -26,21 +26,14 @@ const path = ref(window.location.pathname)
         <a
           href="https://workers.cloudflare.com/"
           target="_blank"
-          rel="noopener"
+          rel="noopener noreferrer"
           v-text="'Cloudflare Workers'"
         />
       </template>
-      <template v-slot:scaleway>
-        <a
-          href="https://www.scaleway.com/en/serverless-functions/"
-          target="_blank"
-          rel="noopener"
-        >
-          Scaleway Functions
-        </a>
-      </template>
       <template v-slot:vue>
-        <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue.js</a>
+        <a href="https://vuejs.org/" target="_blank" rel="noopener noreferrer"
+          >Vue.js</a
+        >
       </template>
     </i18n-t>
   </div>

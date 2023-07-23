@@ -1,6 +1,4 @@
-import type { AxiosResponse } from 'axios'
-
-import axios from 'axios'
+import { fetcher } from 'itty-fetcher'
 
 export type RecentServersStats = {
   [serverId: string]: { [timestamp: string]: number }
@@ -27,37 +25,31 @@ export interface DailyServerStats {
 
 export const apiBaseUrl = '/api'
 
-const client = axios.create({ baseURL: apiBaseUrl })
+const client = fetcher({ base: apiBaseUrl })
 
-export async function fetchServers(): Promise<ServerDescription[]> {
-  const response = await client.get('/servers')
-
-  return response.data
+export function fetchServers() {
+  return client.get<ServerDescription[]>('/servers')
 }
 
-export async function fetchStats(): Promise<ServerStats[]> {
-  const response = await client.get('/servers/stats')
-
-  return response.data
+export function fetchStats() {
+  return client.get<ServerStats[]>('/servers/stats')
 }
 
-export async function fetchRecentStats(): Promise<RecentServersStats> {
-  const response = await client.get('/servers/stats/recent')
-
-  return response.data
+export function fetchRecentStats() {
+  return client.get<RecentServersStats>('/servers/stats/recent')
 }
 
 export function saveServers(
   token: string,
   servers: ServerDescription[],
-): Promise<AxiosResponse<Record<string, string>>> {
+): Promise<Record<string, string>> {
   return client.post('/servers/update', JSON.stringify({ token, servers }))
 }
 
-export async function uploadServerIcons(
+export function uploadServerIcons(
   token: string,
   icons: Record<string, string>,
-): Promise<AxiosResponse<Record<string, string>>> {
+): Promise<Record<string, string>> {
   return client.post('/servers/icons', JSON.stringify({ token, icons }))
 }
 

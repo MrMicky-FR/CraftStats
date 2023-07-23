@@ -18,7 +18,7 @@ onUnmounted(() =>
     .removeEventListener('change', changeListener),
 )
 
-watch(darkTheme, async (theme) => {
+watch(darkTheme, (theme) => {
   const name = theme ? 'dark' : 'light'
   document.documentElement.setAttribute('data-bs-theme', name)
 

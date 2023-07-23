@@ -4,7 +4,18 @@
 @import '~highcharts/css/stocktools/gui.css';
 @import '~bootstrap';
 
-@import 'highcharts';
+:root {
+  --highcharts-color-0: var(--bs-primary);
+  --highcharts-background-color: var(--bs-secondary-bg);
+  --highcharts-neutral-color-100: var(--bs-emphasis-color);
+  --highcharts-neutral-color-80: var(--bs-body-color);
+  --highcharts-neutral-color-60: var(--bs-secondary-color);
+  --highcharts-neutral-color-40: var(--bs-tertiary-color);
+  --highcharts-neutral-color-20: var(--bs-secondary-bg);
+  --highcharts-neutral-color-10: var(--bs-tertiary-color);
+  --highcharts-neutral-color-5: var(--bs-tertiary-bg);
+  --highcharts-neutral-color-3: var(--bs-tertiary-bg);
+}
 
 .box {
   background: var(--bs-secondary-bg);

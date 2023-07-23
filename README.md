@@ -10,7 +10,7 @@ You can see it live on [craftstats.net](https://craftstats.net)
 
 ## Features
 
-* Fast, it's running on more than 200 datacenters worldwide thanks to the power of [Cloudflare Workers](https://workers.cloudflare.com/)
+* Fast, it's running on more than 300 datacenters worldwide thanks to the power of [Cloudflare Workers](https://workers.cloudflare.com/)
 * Historical players count of the last months
 * Fully responsive
 * UI to edit servers
@@ -30,18 +30,6 @@ You can see it live on [craftstats.net](https://craftstats.net)
 * Add an edit token in the `wrangler.toml` by editing the value of `SERVERS_EDIT_TOKEN` 
 * Go on `/editor` and change servers
 * Enter the token and save
-
-# Support for Minecraft: Bedrock Edition
-
-As currently Workers doesn't support opening sockets connections,
-CraftStats uses by default [MC-API.net](https://mc-api.net/) to ping servers, but it
-doesn't support Bedrock servers.
-
-If you want to add Bedrock servers, you can deploy the [ping function](ping-function) to
-a serverless provider with [Node.js](https://nodejs.org/) support, like
-[Scaleway Functions](https://www.scaleway.com/en/serverless-functions/) and set
-the `PING_FUNCTION_URL` in the `wrangler.toml`. This function is only used
-to ping servers and everything else is still done on Cloudflare Workers.
 
 ## Credits
 

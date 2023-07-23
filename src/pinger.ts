@@ -1,16 +1,11 @@
 import { Env } from './index'
 import { Server } from './storage'
+import { status, StatusResult } from './protocol/status'
 
 interface ApiResponse {
-  status: boolean
   online: boolean
   players: { online: number; max: number }
-  favicon_base64?: string
-}
-
-export interface PingResult {
-  onlinePlayers: number
-  maxPlayers: number
+  icon?: string
   favicon?: string
 }
 
@@ -18,7 +13,7 @@ export async function ping(env: Env, server: Server) {
   const attempts = env.PING_ATTEMPTS ?? 1
 
   for (let i = 1; i < attempts; i++) {
-    const result = await doPing(env, server)
+    const result = await tryPing(env, server)
 
     if (!result) {
       console.error(`Error during ping attempt ${i} for ${server.name}.`)
@@ -28,23 +23,29 @@ export async function ping(env: Env, server: Server) {
     return result
   }
 
-  return doPing(env, server)
+  return tryPing(env, server)
 }
 
-async function doPing(env: Env, server: Server): Promise<PingResult | null> {
+async function tryPing(env: Env, server: Server): Promise<StatusResult | null> {
   const hostAliases = env.PING_ALIASES ? JSON.parse(env.PING_ALIASES) : {}
   const host = hostAliases[server.address] || server.address
-  const isBedrock = server.type === 'BEDROCK'
+  const url = server.type === 'JAVA' ? env.STATUS_URL : env.BEDROCK_STATUS_URL
 
-  if (!env.PING_FUNCTION_URL && isBedrock) {
-    console.log('Bedrock servers are not supported without ping function.')
+  if (!url && server.type === 'JAVA') {
+    try {
+      return status(server.address)
+    } catch (e) {
+      console.error(`Unable to ping ${host}: ${e?.toString()}`)
+      return null
+    }
+  }
+
+  if (!url) {
+    console.error('You need to define BEDROCK_STATUS_URL for bedrock servers.')
     return null
   }
 
-  const baseUrl = env.PING_FUNCTION_URL
-    ? `${env.PING_FUNCTION_URL}/${isBedrock ? 'ping-bedrock' : 'ping'}/`
-    : 'https://eu.mc-api.net/v3/server/ping/'
-  const response = await fetch(baseUrl + host, {
+  const response = await fetch(url.replace('{address}', host), {
     headers: {
       'Content-Type': 'application/json',
       'User-Agent': 'CraftStats',
@@ -52,24 +53,16 @@ async function doPing(env: Env, server: Server): Promise<PingResult | null> {
   })
 
   if (!response.ok) {
-    console.log(`Invalid status response for ${host}: ${response.status}`)
+    console.error(`Invalid status response for ${host}: ${response.status}`)
     return null
   }
 
-  const json = await response.json<ApiResponse & PingResult>()
+  const data = await response.json<ApiResponse>()
 
-  if (!json.status || (!env.PING_FUNCTION_URL && !json.online)) {
-    console.log('Invalid server status for ' + host)
+  if (!data.online) {
+    console.error(`Server offline for ${host}`)
     return null
   }
 
-  if (env.PING_FUNCTION_URL) {
-    return json
-  }
-
-  return {
-    onlinePlayers: json.players.online,
-    maxPlayers: json.players.max,
-    favicon: json.favicon_base64,
-  }
+  return { players: data.players, favicon: data.icon || data.favicon }
 }

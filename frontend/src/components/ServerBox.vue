@@ -46,7 +46,7 @@ onMounted(() => createSingleServerChart(props.description, props.stats))
             v-if="description.website"
             :href="description.website"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             class="text-body"
           >
             {{ description.name }}

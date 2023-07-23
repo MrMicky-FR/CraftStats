@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon'
-import { error } from 'itty-router-extras'
 import { Env } from './index'
 import { ping } from './pinger'
 import {
@@ -32,13 +31,13 @@ export async function handleScheduled(env: Env): Promise<Response> {
       })
     }
 
-    return error(500, `Internal server error: ${e}`)
+    return new Response(`Internal server error: ${e}`, { status: 500 })
   }
 }
 
 async function pingServers(env: Env): Promise<void> {
   const now = DateTime.now().set({ millisecond: 0 })
-  const archiveStats = now.minute % env.GLOBAL_CHART_PING_INTERVAL == 0
+  const archive = now.minute % env.GLOBAL_CHART_PING_INTERVAL === 0
   const playersCounts: { [serverId: string]: number } = {}
   let updateServerIcons = false
 
@@ -56,21 +55,21 @@ async function pingServers(env: Env): Promise<void> {
       }
 
       const favicon = result.favicon
-      playersCounts[server.id] = result.onlinePlayers
+      playersCounts[server.id] = result.players.online
 
-      if (archiveStats && favicon && favicon !== serverIcons[server.id]) {
+      if (archive && favicon && favicon !== serverIcons[server.id]) {
         serverIcons[server.id] = favicon
         updateServerIcons = true
       }
     } catch (e) {
       playersCounts[server.id] = -1
-      console.log(`Unable to ping ${server.address}: ${e}`)
+      console.warn(`Unable to ping ${server.address}: ${e}`)
     }
   }
 
   await updateRecentStats(env, servers, playersCounts, now)
 
-  if (archiveStats) {
+  if (archive) {
     await updateStats(env, servers, playersCounts, now)
   }
 
@@ -90,6 +89,10 @@ async function updateRecentStats(
     minutes: env.RECENT_CHARTS_DELETE_AFTER_MINUTES,
   })
   const recentStats = await getRecentStats(env)
+
+  if (!isoDateTime) {
+    return
+  }
 
   for (const server of servers) {
     const stats = recentStats[server.id] || {}
@@ -113,8 +116,13 @@ async function updateStats(
   now: DateTime,
 ) {
   const currentDate = now.toISODate()
+  const currentDateTime = now.toISO()
   const currentTime = now.toFormat('HH:mm')
   const serverStats = await getStats(env)
+
+  if (!currentDate || !currentDateTime) {
+    return
+  }
 
   // Add new servers in stats
   for (const server of servers) {
@@ -132,7 +140,7 @@ async function updateStats(
     }
 
     if (players > (stats.record?.players || 0)) {
-      stats.record = { players, date: now.toISO() }
+      stats.record = { players, date: currentDateTime }
     }
 
     if (!dailyStats) {
