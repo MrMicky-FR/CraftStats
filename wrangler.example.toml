@@ -13,13 +13,13 @@ PING_ATTEMPTS = 2
 # Errors will be sent as a Discord webhook to this URL
 # WEBHOOK_URL = ""
 
-# By default stats in the indivudal servers charts are deleted after 2 hours (120 min)
+# By default, stats in the indivudal servers charts are deleted after 2 hours (120 min)
 RECENT_CHARTS_DELETE_AFTER_MINUTES = 120
 
-# By default the global server chart will have data
-# with a 15 min interval
+# By default, the global server chart will have data
+# with a 15-min interval
 GLOBAL_CHART_PING_INTERVAL = 15
-# By default stats in the global server chart are deleted after 6 months (180 days)
+# By default, stats in the global server chart are deleted after 6 months (180 days)
 GLOBAL_CHART_DELETE_AFTER_DAYS = 180
 
 # You can define a token to edit the servers from the /edit page
@@ -27,7 +27,8 @@ GLOBAL_CHART_DELETE_AFTER_DAYS = 180
 SERVERS_EDIT_TOKEN = ""
 
 # You can define here the URL used to get the servers protocol for Minecraft: Java Edition
-# If not defined, the workers will directly get the status from the server
+# If not defined, the workers will directly get the status from the server.
+# Directly getting the status from the server may consume more CPU.
 # STATUS_URL = "https://api.mcstatus.io/v2/status/java/{address}?query=false"
 
 # URL used to get the servers status for Minecraft: Bedrock Edition

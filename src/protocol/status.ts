@@ -30,17 +30,17 @@ async function rawStatus(hostname: string, port: number) {
   await writer.write(createHandshakePacket(hostname, port))
   await writer.write(createRequestPacket())
 
-  const response = new SocketReader(socket.readable.getReader())
-  const packetLength = await response.readVarInt()
-  const packetType = await response.readVarInt()
+  const reader = new SocketReader(socket.readable.getReader())
+  const packetLength = await reader.readVarInt()
+  const packetType = await reader.readVarInt()
 
-  await response.ensureByteLength(packetLength)
+  await reader.ensureByteLength(packetLength)
 
   if (packetType !== 0x00) {
     throw new Error(`Unexpected packet type: ${packetType}`)
   }
 
-  const json = await response.readStringVarInt()
+  const json = await reader.readStringVarInt()
 
   await writer.close()
   await socket.close()
@@ -67,7 +67,7 @@ function createRequestPacket() {
 }
 
 class SocketWriter {
-  private encoder = new TextEncoder()
+  private readonly encoder = new TextEncoder()
   private data = new Uint8Array(0)
 
   write(byteLength: number, callback: (view: DataView) => void) {
@@ -79,11 +79,7 @@ class SocketWriter {
   }
 
   writeBytes(data: Uint8Array) {
-    const buffer = new Uint8Array(this.data.length + data.length)
-    buffer.set(this.data, 0)
-    buffer.set(data, this.data.length)
-
-    this.data = buffer
+    this.data = concatBuffers(this.data, data)
 
     return this
   }

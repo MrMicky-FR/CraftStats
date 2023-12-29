@@ -1,17 +1,25 @@
 export async function resolveSrv(name: string) {
-  const response = await fetch(
-    `https://cloudflare-dns.com/dns-query?name=${name}&type=srv&ct=application/dns-json`,
-    {
-      headers: {
-        Accept: 'application/dns-json',
-      },
-    },
-  )
+  const params = new URLSearchParams({
+    name,
+    type: 'src',
+    ct: 'application/dns-json',
+  })
 
-  const json = await response.text()
-  const data = JSON.parse(json)
+  const res = await fetch(`https://cloudflare-dns.com/dns-query?${params}`, {
+    headers: {
+      Accept: 'application/dns-json',
+    },
+  })
+
+  if (!res.ok) {
+    console.error(`Invalid DNS response for ${name}: ${res.status}`)
+    return undefined
+  }
+
+  const data = JSON.parse(await res.text())
 
   if (!data.Answer?.length) {
+    console.error(`No DNS records for ${name}}.`)
     return undefined
   }
 

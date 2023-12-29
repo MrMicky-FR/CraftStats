@@ -3,7 +3,7 @@ import type { ServerDescription } from '@/api'
 
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { fetchServers, saveServers, uploadServerIcons } from '@/api'
+import { fetchServers, saveServers, saveServerIcons } from '@/api'
 import BLoader from '@/components/BLoader.vue'
 import EditorServer from '@/components/EditorServer.vue'
 import ThemeButton from '@/components/ThemeButton.vue'
@@ -53,7 +53,7 @@ async function save() {
 
   try {
     if (Object.keys(pendingIcons).length) {
-      await uploadServerIcons(token.value, pendingIcons)
+      await saveServerIcons(token.value, pendingIcons)
 
       Object.keys(pendingIcons).forEach((key) => delete pendingIcons[key])
     }

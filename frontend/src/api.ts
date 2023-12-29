@@ -39,18 +39,14 @@ export function fetchRecentStats() {
   return client.get<RecentServersStats>('/servers/stats/recent')
 }
 
-export function saveServers(
-  token: string,
-  servers: ServerDescription[],
-): Promise<Record<string, string>> {
-  return client.post('/servers/update', JSON.stringify({ token, servers }))
+export function saveServers(token: string, servers: ServerDescription[]) {
+  const params = { token, servers }
+
+  return client.post<Record<string, string>>('/servers/update', params)
 }
 
-export function uploadServerIcons(
-  token: string,
-  icons: Record<string, string>,
-): Promise<Record<string, string>> {
-  return client.post('/servers/icons', JSON.stringify({ token, icons }))
+export function saveServerIcons(token: string, icons: Record<string, string>) {
+  return client.post<Record<string, string>>('/servers/icons', { token, icons })
 }
 
 export function encodeFileAsBase64(file: File): Promise<string> {

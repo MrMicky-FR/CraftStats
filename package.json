@@ -4,7 +4,7 @@
   "description": "Minecraft servers tracker built on Cloudflare Workers with Vue.js.",
   "scripts": {
     "start": "wrangler dev",
-    "publish": "wrangler publish",
+    "deploy": "wrangler deploy",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.ts'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.ts'"
   },
