@@ -88,7 +88,7 @@ export async function createServersChart(
       const data = mapServerStats(value)
 
       if (!server) {
-        return { type: 'spline' }
+        return { type: 'spline' } // Will be filtered out below
       }
 
       colors[index] = server.color || '#0000ff'

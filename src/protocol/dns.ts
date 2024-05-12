@@ -1,7 +1,7 @@
 export async function resolveSrv(name: string) {
   const params = new URLSearchParams({
     name,
-    type: 'src',
+    type: 'srv',
     ct: 'application/dns-json',
   })
 
@@ -19,7 +19,7 @@ export async function resolveSrv(name: string) {
   const data = JSON.parse(await res.text())
 
   if (!data.Answer?.length) {
-    console.error(`No DNS records for ${name}}.`)
+    console.error(`No DNS records for ${name}.`)
     return undefined
   }
 

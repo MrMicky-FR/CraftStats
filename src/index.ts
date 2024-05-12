@@ -15,14 +15,14 @@ import {
   ServerIcons,
 } from './storage'
 import { handleScheduled } from './cron'
-import { fallbackIcon } from './icons'
+import fallbackIcon from './icons/unknown.svg'
 
 import manifestJSON from '__STATIC_CONTENT_MANIFEST'
 
 export interface Env {
-  GLOBAL_CHART_PING_INTERVAL: number
-  GLOBAL_CHART_DELETE_AFTER_DAYS: number
-  RECENT_CHARTS_DELETE_AFTER_MINUTES: number
+  GLOBAL_PING_INTERVAL: number
+  GLOBAL_DELETE_AFTER_DAYS: number
+  RECENT_DELETE_AFTER_MIN: number
   WEBHOOK_URL?: string
   SERVERS_EDIT_TOKEN?: string
   PING_ALIASES?: string

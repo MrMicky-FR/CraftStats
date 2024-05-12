@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import { Env } from './index'
 import { ping } from './pinger'
 import {
@@ -36,8 +35,8 @@ export async function handleScheduled(env: Env): Promise<Response> {
 }
 
 async function pingServers(env: Env): Promise<void> {
-  const now = DateTime.now().set({ millisecond: 0 })
-  const archive = now.minute % env.GLOBAL_CHART_PING_INTERVAL === 0
+  const now = new Date()
+  const archive = now.getMinutes() % env.GLOBAL_PING_INTERVAL === 0
   const playersCounts: { [serverId: string]: number } = {}
   let updateServerIcons = false
 
@@ -60,6 +59,8 @@ async function pingServers(env: Env): Promise<void> {
       if (archive && favicon && favicon !== serverIcons[server.id]) {
         serverIcons[server.id] = favicon
         updateServerIcons = true
+
+        console.log(`Updated favicon for ${server.address}`)
       }
     } catch (e) {
       playersCounts[server.id] = -1
@@ -82,23 +83,17 @@ async function updateRecentStats(
   env: Env,
   servers: Server[],
   playersCounts: Record<string, number>,
-  now: DateTime,
+  now: Date,
 ) {
-  const isoDateTime = now.toISO({ suppressMilliseconds: true })
-  const deleteOlder = now.minus({
-    minutes: env.RECENT_CHARTS_DELETE_AFTER_MINUTES,
-  })
+  const isoDateTime = now.toISOString().slice(0, 19) + 'Z' // Remove milliseconds
+  const deleteDate = now.getTime() - env.RECENT_DELETE_AFTER_MIN * 60 * 1000
   const recentStats = await getRecentStats(env)
-
-  if (!isoDateTime) {
-    return
-  }
 
   for (const server of servers) {
     const stats = recentStats[server.id] || {}
 
     Object.keys(stats)
-      .filter((date) => DateTime.fromISO(date) < deleteOlder)
+      .filter((date) => Date.parse(date) < deleteDate)
       .forEach((date) => delete stats[date])
 
     stats[isoDateTime] = playersCounts[server.id]
@@ -113,16 +108,12 @@ async function updateStats(
   env: Env,
   servers: Server[],
   playersCounts: Record<string, number>,
-  now: DateTime,
+  now: Date,
 ) {
-  const currentDate = now.toISODate()
-  const currentDateTime = now.toISO()
-  const currentTime = now.toFormat('HH:mm')
+  const currentDateTime = now.toISOString()
+  const currentDate = currentDateTime.slice(0, 10) // YYYY-MM-DD
+  const currentTime = now.toTimeString().slice(0, 5) // HH:mm
   const serverStats = await getStats(env)
-
-  if (!currentDate || !currentDateTime) {
-    return
-  }
 
   // Add new servers in stats
   for (const server of servers) {
@@ -150,25 +141,25 @@ async function updateStats(
     stats.stats[currentDate][currentTime] = players
   }
 
-  await putServersStats(env, deleteOldStats(env, serverStats, now))
+  await putServersStats(env, purgeStats(env, servers, serverStats, now))
 }
 
-function deleteOldStats(env: Env, stats: ServerStats[], now: DateTime) {
+function purgeStats(env: Env, serv: Server[], stats: ServerStats[], now: Date) {
   // Clear old stats at 4 am
-  if (now.hour !== 4 || now.minute !== 0) {
+  if (now.getHours() !== 4 || now.getMinutes() !== 0) {
     return stats
   }
 
-  // Delete values older than a year
-  const deleteOlder = now.minus({ days: env.GLOBAL_CHART_DELETE_AFTER_DAYS })
+  const deleteDate = now.getTime() - env.GLOBAL_DELETE_AFTER_DAYS * 86400 * 1000
 
   for (const server of stats) {
     Object.keys(server.stats)
-      .filter((date) => DateTime.fromISO(date) < deleteOlder)
+      .filter((date) => Date.parse(date) < deleteDate)
       .forEach((date) => delete server.stats[date])
   }
 
   console.log('Old stats have been deleted.')
 
-  return stats
+  // Purge stats for deleted servers
+  return stats.filter((server) => serv.find((s) => s.id === server.serverId))
 }

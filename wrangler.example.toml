@@ -1,9 +1,13 @@
 name = "craftstats"
 main = "src/index.ts"
-compatibility_date = "2022-07-01"
+compatibility_date = "2024-05-12"
 
 kv_namespaces = [
     { binding = "KV_SERVERS", id = "" },
+]
+
+rules = [
+    { type = "Text", globs = ["**/*.svg"], fallthrough = true }
 ]
 
 [vars]
@@ -14,13 +18,13 @@ PING_ATTEMPTS = 2
 # WEBHOOK_URL = ""
 
 # By default, stats in the indivudal servers charts are deleted after 2 hours (120 min)
-RECENT_CHARTS_DELETE_AFTER_MINUTES = 120
+RECENT_DELETE_AFTER_MIN = 120
 
-# By default, the global server chart will have data
-# with a 15-min interval
-GLOBAL_CHART_PING_INTERVAL = 15
+# By default, the global server chart will have data with a 15-min interval
+GLOBAL_PING_INTERVAL = 15
+
 # By default, stats in the global server chart are deleted after 6 months (180 days)
-GLOBAL_CHART_DELETE_AFTER_DAYS = 180
+GLOBAL_DELETE_AFTER_DAYS = 180
 
 # You can define a token to edit the servers from the /edit page
 # The token should be at least 10 characters

@@ -63,7 +63,7 @@ function toggleServersChart() {
       <div v-for="(server, i) in servers" :key="server.id" class="col-lg-6">
         <ServerBox
           :description="server"
-          :stats="stats[server.id]"
+          :stats="stats[server.id] || {}"
           :position="i + 1"
         />
       </div>
