@@ -4,12 +4,13 @@ import type { RecentServersStats, ServerDescription } from '@/api'
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { fetchRecentStats, fetchServers, sortServers } from '@/api'
+import { setChartsLocale } from '@/charts.ts'
 import BLoader from '@/components/BLoader.vue'
 import ThemeButton from '@/components/ThemeButton.vue'
 import ServerBox from '@/components/ServerBox.vue'
 import ServersChart from '@/components/ServersChart.vue'
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 
 const error = ref<string>()
 const loading = ref(true)
@@ -19,6 +20,8 @@ const servers = reactive<ServerDescription[]>([])
 const stats = reactive<RecentServersStats>({})
 
 onMounted(async () => {
+  setChartsLocale(locale.value)
+
   try {
     const localStats = await fetchRecentStats()
 
@@ -50,22 +53,18 @@ function toggleServersChart() {
     </button>
   </nav>
 
-  <BLoader v-if="loading" :error="error" />
+  <BLoader v-if="loading" :error />
 
   <div v-else class="mb-4">
     <transition name="fade">
       <div v-if="enableServersChart" v-show="showServersChart">
-        <ServersChart :servers="servers" />
+        <ServersChart :servers />
       </div>
     </transition>
 
     <div class="row gx-xl-4 gy-4">
       <div v-for="(server, i) in servers" :key="server.id" class="col-lg-6">
-        <ServerBox
-          :description="server"
-          :stats="stats[server.id] || {}"
-          :position="i + 1"
-        />
+        <ServerBox :server :stats="stats[server.id] || {}" :position="i + 1" />
       </div>
     </div>
   </div>

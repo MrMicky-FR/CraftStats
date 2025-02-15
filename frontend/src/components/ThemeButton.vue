@@ -7,15 +7,11 @@ const darkTheme = ref(getPreferredTheme())
 const changeListener = () => (darkTheme.value = getPreferredTheme())
 
 onMounted(() =>
-  window
-    .matchMedia('(prefers-color-scheme: dark)')
-    .addEventListener('change', changeListener),
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', changeListener),
 )
 
 onUnmounted(() =>
-  window
-    .matchMedia('(prefers-color-scheme: dark)')
-    .removeEventListener('change', changeListener),
+  window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', changeListener),
 )
 
 watch(darkTheme, (theme) => {

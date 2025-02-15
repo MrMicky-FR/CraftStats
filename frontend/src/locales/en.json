@@ -2,7 +2,8 @@
   "loading": "Loading...",
   "error": "An error occurred: {error}",
   "credits": "Open-source on {git} - Powered by {workers} and {vue}",
-  "players": "Player: {count} | Players: {count}",
+  "players": "Players",
+  "online": "Player: {count} | Players: {count}",
   "offline": "Offline",
   "hide": "Hide servers chart",
   "show": "Show servers chart",
@@ -19,5 +20,8 @@
   "token": "Edit token",
   "saved": "The servers has been saved.",
   "dark": "Dark mode",
-  "light": "Light mode"
+  "light": "Light mode",
+  "all": "All",
+  "days": "{count}d",
+  "months": "{count}m"
 }

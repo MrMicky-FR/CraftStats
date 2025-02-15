@@ -1,6 +1,6 @@
 name = "craftstats"
 main = "src/index.ts"
-compatibility_date = "2024-05-12"
+compatibility_date = "2025-02-02"
 
 kv_namespaces = [
     { binding = "KV_SERVERS", id = "" },
@@ -36,10 +36,11 @@ SERVERS_EDIT_TOKEN = ""
 # STATUS_URL = "https://api.mcstatus.io/v2/status/java/{address}?query=false"
 
 # URL used to get the servers status for Minecraft: Bedrock Edition
-BEDROCK_STATUS_URl = "https://api.mcstatus.io/v2/status/bedrock/{address}"
+BEDROCK_STATUS_URL = "https://api.mcstatus.io/v2/status/bedrock/{address}"
 
 [triggers]
 crons = ["*/5 * * * *"]
 
-[site]
-bucket = "./frontend/dist"
+[assets]
+directory = "./frontend/dist/"
+binding = "ASSETS"

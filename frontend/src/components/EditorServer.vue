@@ -1,28 +1,14 @@
 <script setup lang="ts">
 import type { ServerDescription } from '@/api'
 
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { apiBaseUrl, encodeFileAsBase64 } from '@/api'
 
 const { t } = useI18n()
 
-const props = defineProps<{ modelValue: ServerDescription; icon?: string }>()
-const emit = defineEmits<{
-  (e: 'update:modelValue', server: ServerDescription): void
-  (e: 'update:icon', icon?: string): void
-  (e: 'delete', server: ServerDescription): void
-}>()
-
-const server = computed({
-  get: () => props.modelValue,
-  set: (value: ServerDescription) => emit('update:modelValue', value),
-})
-
-const pendingIcon = computed({
-  get: () => props.icon,
-  set: (value?: string) => emit('update:icon', value),
-})
+const emit = defineEmits<{ delete: [server: ServerDescription] }>()
+const server = defineModel<ServerDescription>({ required: true })
+const icon = defineModel<string>('icon')
 
 async function uploadIcon(event: Event) {
   if (!(event.target instanceof HTMLInputElement) || !event.target.files) {
@@ -36,13 +22,13 @@ async function uploadIcon(event: Event) {
     return
   }
 
-  pendingIcon.value = await encodeFileAsBase64(file)
+  icon.value = await encodeFileAsBase64(file)
 }
 
 function currentIcon(server: string) {
   const favicon = `${apiBaseUrl}/servers/${server}/favicon?time=${Date.now()}`
 
-  return pendingIcon.value || favicon
+  return icon.value || favicon
 }
 </script>
 
@@ -76,9 +62,7 @@ function currentIcon(server: string) {
           placeholder="1.8-1.17"
         />
 
-        <span v-else class="badge bg-secondary">
-          Minecraft: Bedrock Edition
-        </span>
+        <span v-else class="badge bg-secondary">Minecraft: Bedrock Edition</span>
       </div>
 
       <div class="col-sm-8">
@@ -121,10 +105,7 @@ function currentIcon(server: string) {
         />
       </div>
 
-      <div
-        v-if="server.type === 'BEDROCK'"
-        class="col-sm-4 d-flex align-items-center"
-      >
+      <div v-if="server.type === 'BEDROCK'" class="col-sm-4 d-flex align-items-center">
         <img
           :src="currentIcon(server.id)"
           :alt="server.id"
@@ -148,11 +129,7 @@ function currentIcon(server: string) {
       </div>
 
       <div class="col-sm-8">
-        <button
-          @click="emit('delete', server)"
-          type="button"
-          class="btn btn-danger"
-        >
+        <button @click="emit('delete', server)" type="button" class="btn btn-danger">
           {{ t('delete') }}
         </button>
       </div>

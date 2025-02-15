@@ -151,7 +151,7 @@ class SocketReader {
       const read = await this.reader.read()
 
       if (read.done) {
-        throw new Error(`Connection is closed.`)
+        throw new Error('Connection is closed.')
       }
 
       const array = concatBuffers(new Uint8Array(this.buffer), read.value)

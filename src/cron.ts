@@ -1,16 +1,16 @@
-import { Env } from './index'
+import type { Server, ServerStats } from './storage'
+
 import { ping } from './pinger'
 import {
+  getRecentStats,
   getServers,
   getServersIcons,
-  getRecentStats,
   getStats,
-  putServerIcons,
   putRecentStats,
+  putServerIcons,
   putServersStats,
-  Server,
-  ServerStats,
 } from './storage'
+import { subDays, subMinutes } from './utils/dates'
 
 export async function handleScheduled(env: Env): Promise<Response> {
   try {
@@ -86,7 +86,7 @@ async function updateRecentStats(
   now: Date,
 ) {
   const isoDateTime = now.toISOString().slice(0, 19) + 'Z' // Remove milliseconds
-  const deleteDate = now.getTime() - env.RECENT_DELETE_AFTER_MIN * 60 * 1000
+  const deleteDate = subMinutes(now, env.RECENT_DELETE_AFTER_MIN).getTime()
   const recentStats = await getRecentStats(env)
 
   for (const server of servers) {
@@ -150,7 +150,7 @@ function purgeStats(env: Env, serv: Server[], stats: ServerStats[], now: Date) {
     return stats
   }
 
-  const deleteDate = now.getTime() - env.GLOBAL_DELETE_AFTER_DAYS * 86400 * 1000
+  const deleteDate = subDays(now, env.GLOBAL_DELETE_AFTER_DAYS).getTime()
 
   for (const server of stats) {
     Object.keys(server.stats)

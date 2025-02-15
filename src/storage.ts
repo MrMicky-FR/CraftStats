@@ -1,5 +1,3 @@
-import { Env } from './index'
-
 export type ServerIcons = { [serverId: string]: string }
 export type RecentServersStats = {
   [serverId: string]: { [date: string]: number }

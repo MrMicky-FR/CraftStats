@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import ServersList from './components/ServersList.vue'
 import ServersEditor from './components/ServersEditor.vue'
+import ServersList from './components/ServersList.vue'
 
 const path = ref(window.location.pathname)
 </script>
@@ -12,7 +12,7 @@ const path = ref(window.location.pathname)
 
     <ServersList v-else />
 
-    <i18n-t keypath="credits" tag="p" class="text-center">
+    <i18n-t keypath="credits" scope="global" tag="p" class="text-center">
       <template v-slot:git>
         <a
           href="https://github.com/MrMicky-FR/CraftStats"
@@ -31,9 +31,7 @@ const path = ref(window.location.pathname)
         />
       </template>
       <template v-slot:vue>
-        <a href="https://vuejs.org/" target="_blank" rel="noopener noreferrer"
-          >Vue.js</a
-        >
+        <a href="https://vuejs.org/" target="_blank" rel="noopener noreferrer">Vue.js</a>
       </template>
     </i18n-t>
   </div>

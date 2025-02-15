@@ -7,27 +7,36 @@ function mapServerStats(stats: ServerStats) {
   return Object.entries(stats.stats).flatMap(([date, dailyStats]) => {
     return Object.entries(dailyStats)
       .filter(([, count]) => count >= 0)
-      .map(([time, count]) => {
-        return [Date.parse(`${date}T${time}:01.000Z`), count]
-      })
+      .map(([time, count]) => [Date.parse(`${date}T${time}:01.000Z`), count])
+  })
+}
+
+export function setChartsLocale(locale: string) {
+  if (locale === 'en' && !new Date().toLocaleString().endsWith('M')) {
+    locale = 'en-GB' // Use 24-hour format if it's the browser format
+  }
+
+  Highcharts.setOptions({
+    lang: { locale },
   })
 }
 
 export function createSingleServerChart(
-  server: ServerDescription,
+  element: HTMLElement | null,
   stats: Record<string, number>,
+  dataLabel: string,
 ) {
   const data = Object.entries(stats).map(([date, count]) => {
     return [Date.parse(date), count]
   })
 
-  if (!data.length) {
+  if (element === null || !data.length) {
     return
   }
 
   new Highcharts.Chart({
     chart: {
-      renderTo: `server-chart-${server.id}`,
+      renderTo: element,
       type: 'spline',
       animation: true,
       spacingLeft: 0,
@@ -37,8 +46,8 @@ export function createSingleServerChart(
     title: undefined,
     xAxis: { type: 'datetime' },
     yAxis: { title: undefined, floor: 0 },
-    tooltip: { xDateFormat: '%H:%M:%S' },
-    time: { timezoneOffset: new Date().getTimezoneOffset() },
+    tooltip: { xDateFormat: '%[HM]' },
+    time: { timezone: undefined },
     responsive: {
       rules: [
         {
@@ -59,7 +68,7 @@ export function createSingleServerChart(
     credits: { enabled: false },
     series: [
       {
-        name: 'Players',
+        name: dataLabel,
         marker: { enabled: false },
         type: 'spline',
         data,
@@ -69,11 +78,16 @@ export function createSingleServerChart(
 }
 
 export async function createServersChart(
+  element: HTMLElement | null,
   servers: ServerDescription[],
   stats: ServerStats[],
+  translate: (key: string, count?: number) => string,
 ) {
-  const { default: StockModule } = await import('highcharts/modules/stock')
-  StockModule(Highcharts)
+  if (element === null) {
+    return
+  }
+
+  await import('highcharts/modules/stock')
 
   const serverDescriptions = servers.reduce<{
     [serverId: string]: ServerDescription
@@ -100,29 +114,26 @@ export async function createServersChart(
         data,
         dataGrouping: {
           approximation: 'high',
-          dateTimeLabelFormats: {
-            second: ['%A, %b %e, %H:%M:%S', '%A, %b %e, %H:%M:%S'],
-            minute: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M'],
-          },
         },
       }
     })
     .filter((value) => value.data?.length)
 
-  Highcharts.stockChart('servers-chart', {
+  Highcharts.stockChart(element, {
+    lang: { rangeSelectorZoom: undefined },
     chart: { type: 'spline', styledMode: true },
     rangeSelector: {
       buttons: [
-        { type: 'day', count: 1, text: '1d' },
-        { type: 'day', count: 7, text: '7d' },
-        { type: 'month', count: 1, text: '1m' },
-        { type: 'all', text: 'All' },
+        { type: 'day', count: 1, text: translate('days', 1) },
+        { type: 'day', count: 7, text: translate('days', 7) },
+        { type: 'month', count: 1, text: translate('months', 1) },
+        { type: 'all', text: translate('all') },
       ],
       selected: 1,
     },
     yAxis: { opposite: true, floor: 0 },
-    tooltip: { split: false, shared: true },
-    time: { timezoneOffset: new Date().getTimezoneOffset() },
+    tooltip: { split: false, shared: true, xDateFormat: '%[YebHM]' },
+    time: { timezone: undefined },
     accessibility: { enabled: false },
     legend: { enabled: true },
     exporting: { enabled: false },
@@ -147,20 +158,20 @@ function insertCustomClasses(colors: string[]) {
 
 function getStyleSheet() {
   if (!document.styleSheets || document.styleSheets.length === 0) {
-    return null
+    return undefined
   }
 
-  for (let i = 0; i < document.styleSheets.length; i++) {
-    if (document.styleSheets[i].disabled) {
+  for (const stylesheet of document.styleSheets) {
+    if (stylesheet.disabled) {
       continue
     }
 
-    const media = document.styleSheets[i].media
+    const media = stylesheet.media
 
     if (media.mediaText === '' || media.mediaText.indexOf('screen') !== -1) {
-      return document.styleSheets[i]
+      return stylesheet
     }
   }
 
-  return null
+  return undefined
 }

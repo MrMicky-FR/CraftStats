@@ -1,9 +1,9 @@
-# https://editorconfig.org
-# Prettier & EditorConfig are adering to Wrangler codebase standards which
-# are documented here: https://github.com/cloudflare/wrangler2/pull/1309
-root = true
-
-[*]
-end_of_line = lf
+[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue}]
+charset = utf-8
+indent_size = 2
 indent_style = space
-tab_width = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+end_of_line = lf
+max_line_length = 100

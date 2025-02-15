@@ -96,11 +96,7 @@ async function save() {
       </div>
     </div>
 
-    <button
-      @click="addServer(false)"
-      type="button"
-      class="btn btn-primary me-3"
-    >
+    <button @click="addServer(false)" type="button" class="btn btn-primary me-3">
       {{ t('add') }}
     </button>
 
@@ -121,13 +117,7 @@ async function save() {
         <label for="token" class="form-label">
           {{ t('token') }}
         </label>
-        <input
-          v-model.trim="token"
-          id="token"
-          type="text"
-          class="form-control"
-          required
-        />
+        <input v-model.trim="token" id="token" type="text" class="form-control" required />
       </div>
 
       <button :disabled="saving" type="submit" class="btn btn-primary">

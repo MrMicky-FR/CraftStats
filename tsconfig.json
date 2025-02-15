@@ -1,18 +1,19 @@
 {
-  "include": ["src"],
+  "include": [
+    "src/**/*.ts",
+    "eslint.config.*"
+  ],
   "compilerOptions": {
     "target": "esnext",
     "lib": ["esnext"],
     "module": "esnext",
+    "moduleResolution": "bundler",
     "types": ["@cloudflare/workers-types"],
     "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": true,
     "noEmit": true,
     "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true
   }
 }

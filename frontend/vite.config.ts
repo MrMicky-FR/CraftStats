@@ -1,3 +1,4 @@
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import path from 'path'
 
@@ -10,10 +11,8 @@ export default defineConfig({
   plugins: [
     vue(),
     VueI18nPlugin({
-      include: path.resolve(
-        path.dirname(fileURLToPath(import.meta.url)),
-        './src/locales/**',
-      ),
+      dropMessageCompiler: true,
+      include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**'),
     }),
   ],
   resolve: {
