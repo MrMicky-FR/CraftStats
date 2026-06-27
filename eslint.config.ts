@@ -1,14 +1,21 @@
-import eslint from '@eslint/js'
-import eslintPluginPrettier from 'eslint-plugin-prettier/recommended'
-import tseslint from 'typescript-eslint'
+import { globalIgnores } from 'eslint/config'
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import pluginVue from 'eslint-plugin-vue'
+import pluginOxlint from 'eslint-plugin-oxlint'
+import skipFormatting from 'eslint-config-prettier/flat'
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.strict,
-  eslintPluginPrettier,
+export default defineConfigWithVueTs(
   {
-    rules: {
-      '@typescript-eslint/no-dynamic-delete': 'off',
-    },
+    name: 'app/files-to-lint',
+    files: ['**/*.{vue,ts,mts,tsx}'],
   },
+
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+
+  ...pluginVue.configs['flat/essential'],
+  vueTsConfigs.recommended,
+
+  ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
+
+  skipFormatting,
 )

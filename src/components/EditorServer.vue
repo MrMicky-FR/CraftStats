@@ -1,0 +1,146 @@
+<script setup lang="ts">
+import type { ServerDescription } from '@/api'
+
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { apiBaseUrl, encodeFileAsBase64 } from '@/api'
+
+const { t } = useI18n()
+
+const emit = defineEmits<{ delete: [server: ServerDescription] }>()
+const server = defineModel<ServerDescription>({ required: true })
+const icon = defineModel<string>('icon')
+const props = defineProps<{ iconRefresh: number }>()
+
+const currentIcon = computed(
+  () => icon.value ?? `${apiBaseUrl}/servers/${server.value.id}/icon?time=${props.iconRefresh}`,
+)
+
+async function uploadIcon(event: Event) {
+  if (!(event.target instanceof HTMLInputElement) || !event.target.files) {
+    return
+  }
+
+  const input = event.target
+  const file = event.target.files[0]
+
+  if (!file) {
+    return
+  }
+
+  try {
+    if (file.size > 100_000) {
+      alert('Max icon size is 100 KB.')
+      return
+    }
+
+    if (file.type !== 'image/png') {
+      alert('Icon must be a PNG image.')
+      return
+    }
+
+    icon.value = await encodeFileAsBase64(file)
+  } finally {
+    input.value = ''
+  }
+}
+</script>
+
+<template>
+  <div class="box h-100">
+    <div class="row g-3 mb-3">
+      <div class="col-sm-8">
+        <label :for="'name-' + server.id" class="form-label">
+          {{ t('name') }}
+        </label>
+        <input
+          v-model.trim="server.name"
+          :id="'name-' + server.id"
+          type="text"
+          class="form-control"
+          placeholder="Hypixel"
+          required
+        />
+      </div>
+
+      <div class="col-sm-4">
+        <label :for="'version-' + server.id" class="form-label">
+          {{ t('version') }}
+        </label>
+        <input
+          v-if="server.type !== 'BEDROCK'"
+          v-model.trim="server.version"
+          :id="'version-' + server.id"
+          type="text"
+          class="form-control"
+          placeholder="1.8-1.17"
+        />
+
+        <span v-else class="badge bg-secondary">Minecraft: Bedrock Edition</span>
+      </div>
+
+      <div class="col-sm-8">
+        <label :for="'address-' + server.id" class="form-label">
+          {{ t('address') }}
+        </label>
+        <input
+          v-model.trim="server.address"
+          :id="'address-' + server.id"
+          type="text"
+          class="form-control"
+          placeholder="mc.hypixel.net"
+          required
+        />
+      </div>
+
+      <div class="col-sm-4">
+        <label :for="'color-' + server.id" class="form-label">
+          {{ t('color') }}
+        </label>
+        <input
+          v-model.trim="server.color"
+          :id="'color-' + server.id"
+          type="color"
+          class="form-control form-control-color w-100"
+          required
+        />
+      </div>
+
+      <div v-if="server.type === 'BEDROCK'" class="col-sm-8">
+        <label :for="'icon-' + server.id" class="form-label">
+          {{ t('icon') }}
+        </label>
+        <input
+          @change="uploadIcon"
+          :id="'icon-' + server.id"
+          type="file"
+          accept="image/png"
+          class="form-control"
+        />
+      </div>
+
+      <div v-if="server.type === 'BEDROCK'" class="col-sm-4 d-flex align-items-center">
+        <img :src="currentIcon" :alt="server.name" class="rounded" height="64" width="64" />
+      </div>
+
+      <div class="col-sm-8">
+        <label :for="'website-' + server.id" class="form-label">
+          {{ t('website') }}
+        </label>
+        <input
+          v-model.trim="server.website"
+          :id="'website-' + server.id"
+          type="url"
+          class="form-control"
+          placeholder="https://hypixel.net"
+        />
+      </div>
+
+      <div class="col-sm-8">
+        <button @click="emit('delete', server)" type="button" class="btn btn-danger">
+          {{ t('delete') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</template>

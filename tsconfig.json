@@ -1,19 +1,14 @@
 {
-  "include": [
-    "src/**/*.ts",
-    "eslint.config.*"
-  ],
-  "compilerOptions": {
-    "target": "esnext",
-    "lib": ["esnext"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "types": ["@cloudflare/workers-types"],
-    "resolveJsonModule": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "strict": true
-  }
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.worker.json"
+    }
+  ]
 }

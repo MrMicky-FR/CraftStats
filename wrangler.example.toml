@@ -1,14 +1,12 @@
 name = "craftstats"
-main = "src/index.ts"
-compatibility_date = "2025-02-02"
+main = "server/index.ts"
+compatibility_date = "2026-06-08"
+upload_source_maps = true
 
-kv_namespaces = [
-    { binding = "KV_SERVERS", id = "" },
-]
+kv_namespaces = [{ binding = "KV_SERVERS", id = "" }]
 
-rules = [
-    { type = "Text", globs = ["**/*.svg"], fallthrough = true }
-]
+[observability]
+enabled = true
 
 [vars]
 # Retry when server ping failed

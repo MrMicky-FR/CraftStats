@@ -1,52 +1,30 @@
-name: Node.js CI
+name: Vue TypeScript CI
 
 on:
   push:
   pull_request:
 
 jobs:
-  lint:
-    name: Lint
+  build:
+    name: Build
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint
-        run: npm run lint
-
-  frontend:
-    name: Build frontend
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm install
-
-      - name: Lint
-        working-directory: frontend
         run: npm run lint
 
       - name: Build
-        working-directory: frontend
         run: npm run build
